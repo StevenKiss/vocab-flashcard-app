@@ -2,12 +2,12 @@ import PyPDF2
 from docx import Document
 import os
 
-def extract_pdf_test(pdf_path):
+def extract_pdf_text(pdf_path):
     """Extract the text from a PDF file."""
     try:
         with open(pdf_path, 'rb') as pdf_file:
             reader = PyPDF2.PdfReader(pdf_file)
-            test = ""
+            text = ""
             for page in reader.pages:
                 text += page.extract_text() + "\n"
             return text
