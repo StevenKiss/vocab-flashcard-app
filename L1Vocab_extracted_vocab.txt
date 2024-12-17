@@ -1,0 +1,168 @@
+Word: 家
+Pinyin: jiā
+Definition: family, home, 我们家，你们家，家人，我（的）家，我家在北京，一个家
+
+Word: 你
+Pinyin: nǐ
+Definition: you (singular pronoun)
+
+Word: 好
+Pinyin: hǎo
+Definition: good, well, fine, 你好，老师好
+
+Word: 我
+Pinyin: wǒ
+Definition: I; me
+
+Word: 叫
+Pinyin: jiào
+Definition: to call, to be called
+
+Word: 请问
+Pinyin: qǐngwèn
+Definition: may I ask
+
+Word: 请
+Pinyin: qǐng
+Definition: please
+
+Word: 问
+Pinyin: wèn
+Definition: ask
+
+Word: 什么
+Pinyin: shénme
+Definition: what 
+
+Word: 名字
+Pinyin: míngzi
+Definition: name，叫什么名字
+
+Word: 姓
+Pinyin: xìng
+Definition: surname; one’s surname is，他姓马
+
+Word: 认识
+Pinyin: rènshi
+Definition: to know，我认识他
+
+Word: 很
+Pinyin: hěn
+Definition: very，很好
+
+Word: 高兴
+Pinyin: gāoxìng
+Definition: happy，很高兴
+
+Word: 也
+Pinyin: yě
+Definition: also; too，也很高兴
+
+Word: 在
+Pinyin: zài
+Definition: to be (at a place)，在吗
+
+Word: 吗
+Pinyin: ma
+Definition: a question particle，你忙吗
+
+Word: 进
+Pinyin: jìn
+Definition: to enter，请进
+
+Word: 坐
+Pinyin: zuò
+Definition: to sit，请坐
+
+Word: 谢谢
+Pinyin: xièxie
+Definition: to thank，谢谢你
+
+Word: 最近
+Pinyin: zuìjìn
+Definition: recently，最近怎么样
+
+Word: 怎么样
+Pinyin: zěnmeyàng
+Definition: how (is something), how about，你怎么样
+
+Word: 呢
+Pinyin: ne
+Definition: an elliptical question particle，他呢
+
+Word: 忙
+Pinyin: máng
+Definition: busy，很忙
+
+Word: 不
+Pinyin: bù
+Definition: not; no，不忙
+
+Word: 太
+Pinyin: tài
+Definition: too, extremely, 不太忙
+
+Word: 他
+Pinyin: tā
+Definition: he, him (singular)
+
+Word: 困
+Pinyin: kùn
+Definition: sleepy，很困
+
+Word: 渴
+Pinyin: kě
+Definition: thirsty，我很渴
+
+Word: 饿
+Pinyin: è
+Definition: hungry，不饿
+
+Word: 累
+Pinyin: lèi
+Definition: tired，不太累
+
+Word: 还行
+Pinyin: háixíng
+Definition: not bad，她还行
+
+Word: 马马虎虎
+Pinyin: mǎmǎhūhū
+Definition: so so
+
+Word: 她
+Pinyin: tā
+Definition: she, her (singular)
+
+Word: 力
+Pinyin: lì
+Definition: strength
+
+Word: 生
+Pinyin: shēng
+Definition: to be born
+
+Word: 言
+Pinyin: yán
+Definition: speech，
+
+Word: 人
+Pinyin: rén
+Definition: person
+
+Word: 木
+Pinyin: mù
+Definition: wood
+
+Word: 羊
+Pinyin: yáng
+Definition: sheep
+
+Word: 井
+Pinyin: jǐng
+Definition: well (noun)
+
+Word: 土
+Pinyin: tǔ
+Definition: earth
+
