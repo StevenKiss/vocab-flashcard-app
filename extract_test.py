@@ -27,6 +27,8 @@ def extract_docx_text(docx_path):
     except FileNotFoundError:
         print(f"Error: File '{docx_path}' not found.")
         return None
+    
+
 def extract_text(file_path):
     """Figure out which file type it is and extract the text."""
     if file_path.endswith(".pdf"):
@@ -36,26 +38,49 @@ def extract_text(file_path):
     else:
         print("Unsupported file type. Please type in either .pdf or .docx")
 
-def extract_chinese_characters(text):
-    """Extract only the Chinese Characters from the text."""
-    # Use regex to match Chinese characters
-    chinese_characters = re.findall(r'[\u4e00-\u9fff]', text)
-    return chinese_characters
+def extract_vocab(text):
+    """
+    Extract the Mandarin words, pinyin, and definitions using regular expression.
+    Structure is: Word, pinyin: definition, example usage
+    """
 
-def save_mandarin_text(file_path, chinese_text):
-    """Saves the extracted Chiense text to a new 
-        file starting with the same name"""
-    # Convert list into a set to keep only unique characters
-    unique_chinese_text = set(chinese_text)
+    # Remove headers
+    cleaned_text = re.sub(r'Text\s+\d|Supplementary|Basic\s+Hanzi', '', text, flags=re.IGNORECASE)
+    cleaned_text = re.sub(r'^\s*\n', '', cleaned_text, flags=re.MULTILINE)
+
+    print(f"This is the cleaned text:\n {cleaned_text}")
+    # Use regex to match Chinese characters
+    pattern = r'([\u4e00-\u9fff，]+)，([a-zA-Zāáǎàēéěèōóǒòūúǔùīíǐìüǘǚǜ]+):\s(.+?)(?=\n|$)'
+    matches = re.findall(pattern, text)
+
+    # Create dictionaries to organize results
+    vocab_list = []
+    for match in matches:
+        word = match[0].strip(", ")
+        pinyin = match[1]
+        definition = match[2]
+        vocab_list.append({"Word": word, "Pinyin": pinyin, "Definition": definition})
+    print(vocab_list)
+    return vocab_list
+
+def save_vocab_to_file(file_path, vocab_list):
+    """
+    Saves the extracted vocab to a file in structured manner
+    """
 
     # Split into base_name and extension
     base_name, ext = os.path.splitext(os.path.basename(file_path))
-    new_file_name = f"{base_name}_mandarin_only.txt"
+    new_file_name = f"{base_name}_extracted_vocab.txt"
 
-    # Write unique Chinese Characters to the new file
-    with open(new_file_name, "w", encoding = "utf-8") as f:
-        f.write("\n".join(unique_chinese_text))
-    print(f"\nSaved Mandarin Text to '{new_file_name}'.")
+    # Save into file
+    with open(new_file_name, "w", encoding="utf-8") as f:
+        for entry in vocab_list:
+            print(entry)
+            f.write(f"Word: {entry['Word']}\n")
+            f.write(f"Pinyin: {entry['Pinyin']}\n")
+            f.write(f"Definition: {entry['Definition']}\n")
+            f.write("\n")
+    print(f"\nVocabulary saved to: {new_file_name}")
 
 
 #Main function
@@ -74,12 +99,14 @@ if __name__ == "__main__":
             print("\nExtracted Text:\n")
             print(text)
 
-            print("\nExtracted Mandarin Text:\n")
-            chinese_text = extract_chinese_characters(text)
-            print(chinese_text)
+            print("\nExtracted Vocab:\n")
+            vocab_list = extract_vocab(text)
+            for vocab in vocab_list:
+                print(f"{vocab['Word']} ({vocab['Pinyin']}): {vocab['Definition']}")
 
-            # Write the chinese text to a file
-            save_mandarin_text(file_path, chinese_text)
+
+            # Save vocab to file
+            save_vocab_to_file(file_path, vocab_list)
 
         else:
             print("Text extraction was unsuccessful.")
