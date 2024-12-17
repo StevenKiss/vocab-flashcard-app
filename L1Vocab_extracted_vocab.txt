@@ -54,10 +54,6 @@ Word: 高兴
 Pinyin: gāoxìng
 Definition: happy，很高兴
 
-Word: 也
-Pinyin: yě
-Definition: also; too，也很高兴
-
 Word: 在
 Pinyin: zài
 Definition: to be (at a place)，在吗
@@ -130,10 +126,6 @@ Word: 马马虎虎
 Pinyin: mǎmǎhūhū
 Definition: so so
 
-Word: 她
-Pinyin: tā
-Definition: she, her (singular)
-
 Word: 力
 Pinyin: lì
 Definition: strength
@@ -161,8 +153,4 @@ Definition: sheep
 Word: 井
 Pinyin: jǐng
 Definition: well (noun)
-
-Word: 土
-Pinyin: tǔ
-Definition: earth
 
