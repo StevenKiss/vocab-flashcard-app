@@ -1,6 +1,7 @@
 import PyPDF2
 from docx import Document
 import os
+import re #for extracting Mandarin text
 
 def extract_pdf_text(pdf_path):
     """Extract the text from a PDF file."""
@@ -35,6 +36,21 @@ def extract_text(file_path):
     else:
         print("Unsupported file type. Please type in either .pdf or .docx")
 
+def extract_chinese_characters(text):
+    """Extract only the Chinese Characters from the text."""
+    # Use regex to match Chinese characters
+    chinese_characters = re.findall(r'[\u4e00-\u9fff]', text)
+    return chinese_characters
+
+def save_mandarin_text(file_path, chinese_text):
+    """Saves the extracted Chiense text to a new 
+        file starting with the same name"""
+    # Split into base_name and extension
+    base_name, ext = os.path.splitext(os.path.basename(file_path))
+    new_file_name = f"{base_name}_mandarin_only.txt"
+    with open(new_file_name, "w", encoding = "utf-8") as f:
+        f.write("\n".join(chinese_text))
+    print(f"\nSaved Mandarin Text to '{new_file_name}'.")
 #Main function
 if __name__ == "__main__":
     # Default folder that holds test files
@@ -50,6 +66,14 @@ if __name__ == "__main__":
         if text:
             print("\nExtracted Text:\n")
             print(text)
+
+            print("\nExtracted Mandarin Text:\n")
+            chinese_text = extract_chinese_characters(text)
+            print(chinese_text)
+
+            # Write the chinese text to a file
+            save_mandarin_text(file_path, chinese_text)
+
         else:
             print("Text extraction was unsuccessful.")
     else:
