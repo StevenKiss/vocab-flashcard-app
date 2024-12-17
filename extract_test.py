@@ -45,12 +45,19 @@ def extract_chinese_characters(text):
 def save_mandarin_text(file_path, chinese_text):
     """Saves the extracted Chiense text to a new 
         file starting with the same name"""
+    # Convert list into a set to keep only unique characters
+    unique_chinese_text = set(chinese_text)
+
     # Split into base_name and extension
     base_name, ext = os.path.splitext(os.path.basename(file_path))
     new_file_name = f"{base_name}_mandarin_only.txt"
+
+    # Write unique Chinese Characters to the new file
     with open(new_file_name, "w", encoding = "utf-8") as f:
-        f.write("\n".join(chinese_text))
+        f.write("\n".join(unique_chinese_text))
     print(f"\nSaved Mandarin Text to '{new_file_name}'.")
+
+
 #Main function
 if __name__ == "__main__":
     # Default folder that holds test files
