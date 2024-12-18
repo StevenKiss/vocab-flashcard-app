@@ -5,37 +5,12 @@ import {View, Text} from 'react-native';
 import {Ionicons} from '@expo/vector-icons'; // For icons
 import {COLORS} from './constants/colors'; // To implement color scheme
 
-// Screens
-const HomeScreen = () => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.background}}>
-    <Text style={{ color: COLORS.textPrimary}}> Home Screen </Text>
-  </View>
-);
-
-const LibraryScreen = () => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.background}}>
-    <Text style={{ color: COLORS.textPrimary}}> Libarary Screen</Text>
-  </View>
-);
-
-const AddScreen = () => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.background}}>
-    <Text style={{ color: COLORS.textPrimary}}> Add Screen </Text>
-  </View>
-);
-
-const CharactersScreen = () => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.background}}>
-    <Text style={{ color: COLORS.textPrimary}}> Characters Screen</Text>
-  </View>
-);
-
-const ProfileScreen = () => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.background}}>
-    <Text style={{ color: COLORS.textPrimary}}> Profile Screen</Text>
-  </View>
-);
-
+// Import the screens
+import HomeScreen from './screens/HomeScreen';
+import LibraryScreen from './screens/LibraryScreen';
+import AddScreen from './screens/AddScreen';
+import CharactersScreen from './screens/CharactersScreen';
+import ProfileScreen from './screens/ProfileScreen';
 
 // Creating the Tab Navigator
 const Tab = createBottomTabNavigator();
