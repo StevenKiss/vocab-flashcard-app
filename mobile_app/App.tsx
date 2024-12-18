@@ -3,35 +3,36 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {View, Text} from 'react-native';
 import {Ionicons} from '@expo/vector-icons'; // For icons
+import {COLORS} from './constants/colors'; // To implement color scheme
 
 // Screens
 const HomeScreen = () => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-    <Text> Home Screen </Text>
+  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.background}}>
+    <Text style={{ color: COLORS.textPrimary}}> Home Screen </Text>
   </View>
 );
 
 const LibraryScreen = () => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-    <Text> Libarary Screen</Text>
+  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.background}}>
+    <Text style={{ color: COLORS.textPrimary}}> Libarary Screen</Text>
   </View>
 );
 
 const AddScreen = () => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-    <Text> Add Screen </Text>
+  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.background}}>
+    <Text style={{ color: COLORS.textPrimary}}> Add Screen </Text>
   </View>
 );
 
 const CharactersScreen = () => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-    <Text> Characters Screen</Text>
+  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.background}}>
+    <Text style={{ color: COLORS.textPrimary}}> Characters Screen</Text>
   </View>
 );
 
 const ProfileScreen = () => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-    <Text> Profile Screen</Text>
+  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.background}}>
+    <Text style={{ color: COLORS.textPrimary}}> Profile Screen</Text>
   </View>
 );
 
@@ -44,6 +45,10 @@ export default function App() {
     <NavigationContainer>
       <Tab.Navigator screenOptions={({route}) => ({ 
         headerShown: false, // Hides the screen header making it look nice
+        tabBarStyle: {
+          backgroundColor: COLORS.background,
+          borderTopColor: COLORS.border,
+        },
         tabBarIcon: ({focused, color, size}) => {
           let iconName;
 
@@ -62,8 +67,8 @@ export default function App() {
         
         return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#007AFF', // Tab color when in use
-        tabBarInactiveTintColor: 'gray', // Tab color when not in use
+        tabBarActiveTintColor: COLORS.primary, // Tab color when in use
+        tabBarInactiveTintColor: COLORS.textSecondary, // Tab color when not in use
         })}
       >
         <Tab.Screen name= "Home" component={HomeScreen} />
