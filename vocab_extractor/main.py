@@ -4,9 +4,13 @@ from vocab_extraction import extract_vocab
 from file_operations import save_vocab_to_file
 
 def main():
-    # Default folder that holds test files
-    default_folder = "TestFiles"
+    # Get the directory name that conatins 'vocab_extractor'
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+    # Default folder that holds test files
+    default_folder = os.path.join(BASE_DIR, "TestFiles")
+    
+    # Get file name
     file_name = input("Enter the file path (PDF or DOCX): ").strip()
 
     # Combine file name and folder name
