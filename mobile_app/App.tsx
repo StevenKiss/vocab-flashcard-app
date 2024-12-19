@@ -1,19 +1,45 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {View, Text} from 'react-native';
+import {createStackNavigator} from '@react-navigation/stack';
+
 import {Ionicons} from '@expo/vector-icons'; // For icons
 import {COLORS} from './constants/colors'; // To implement color scheme
 
 // Import the screens
 import HomeScreen from './screens/HomeScreen';
 import LibraryScreen from './screens/LibraryScreen';
+import FlashcardScreen from './screens/FlashCardScreen';
 import AddScreen from './screens/AddScreen';
 import CharactersScreen from './screens/CharactersScreen';
 import ProfileScreen from './screens/ProfileScreen';
 
 // Creating the Tab Navigator
 const Tab = createBottomTabNavigator();
+
+// Creating a Stack Navigator for the Library
+const LibraryStack = createStackNavigator();
+
+function LibraryStackScreen() {
+  return(
+    <LibraryStack.Navigator screenOptions={{headerShown: false}}>
+
+      {/* LibraryScreen is the default screen*/}
+      <LibraryStack.Screen 
+        name="LibraryMain" 
+        component={LibraryScreen} 
+        options={{headerShown: false}}
+      />
+
+      {/* Flashcard is the secondary screen */}
+      <LibraryStack.Screen 
+        name="Flashcard" 
+        component={FlashcardScreen}
+        options={({route}) => ({title: route.parms?.title || 'Flashcard Set'})}
+      />
+    </LibraryStack.Navigator>
+  );
+}
 
 export default function App() {
   return (
@@ -47,7 +73,7 @@ export default function App() {
         })}
       >
         <Tab.Screen name= "Home" component={HomeScreen} />
-        <Tab.Screen name= "Library" component={LibraryScreen} />
+        <Tab.Screen name= "Library" component={LibraryStackScreen} />
         <Tab.Screen name= "Add" component={AddScreen} />
         <Tab.Screen name= "Characters" component={CharactersScreen} />
         <Tab.Screen name= "Profile" component={ProfileScreen} />
