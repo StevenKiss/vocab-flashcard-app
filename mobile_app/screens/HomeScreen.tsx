@@ -32,7 +32,7 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F7F3F7', // Light sort purple/white background color
+        backgroundColor: '#EFE7EC', // Light sort purple/white background color
         padding: 20,
     },
     greeting: {
