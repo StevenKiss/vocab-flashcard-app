@@ -10,11 +10,17 @@ import {
 } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker'; // For picking a file
 import axios from 'axios'; // Necessary to send request to the Flask API
+import {useNavigation} from '@react-navigation/native'
+import {StackNavigationProp} from '@react-navigation/stack';
+import {RootStackParamList} from '../types/types';
+
+type AddScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Add'>;
 
 const AddScreen = () => {
   const [loading, setLoading] = useState(false); // While calling API shows a spinner
   const [vocabData, setVocabData]= useState([]); // For storing vocabulary data
   const [error, setError] = useState(''); // For storing error messages
+  const navigation = useNavigation<AddScreenNavigationProp>();
 
   // Handle File Selection
   const pickDocument = async () => {
@@ -41,19 +47,12 @@ const AddScreen = () => {
     setLoading(true); // loading spinner
     const formData = new FormData();
 
-    console.log('Selected file:', file);
-    console.log("Selected file:", file.assets[0]);
-    console.log("File URI:", file.assets[0].uri);
-    console.log("File Name:", file.assets[0].name);
-    console.log("File MIME Type:", file.assets[0].mimeType);
-    console.log("File Size:", file.assets[0].size);
 
     // Append file to formData
     formData.append('file', {
         uri: file.assets[0].uri,
         name: file.assets[0].name || 'badname_file.docx',
         type: file.assets[0].mimeType,
-        //type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     } as any);
 
     // Logging the formData for debug purposes
@@ -67,15 +66,36 @@ const AddScreen = () => {
             },
         });
 
-        // Update state with vocab data
-        setVocabData(response.data.vocab);
-        console.log('Vocab data received:', response.data.vocab);
+        console.log('Navigating to LibraryMain with data:', {
+            extractedVocab: response.data.vocab,
+            fileName: file.assets[0].name.replace('.docx', ''),
+        });
+        
+          // Navigate to LibraryScreen with extracted vocab and file name
+          navigation.navigate('Library', {
+            screen: 'LibraryMain', // Parent and nested screen names
+            params: {
+              extractedVocab: response.data.vocab,
+              fileName: file.assets[0].name.replace('.docx', ''),
+            },
+          });
     } catch (e: any) {
         console.error('Error uploading file:', e);
         setError(e.message || 'An error occurred during the upload.');
     } finally {
         setLoading(false); // Hide the loading spinner
     }
+  };
+
+  // Handle Save to Library
+  const saveToLibrary = () => {
+    if (vocabData.length === 0) {
+        setError('No vocabulary data to save');
+        return;
+    }
+
+    // Navigate to Library Screen with vocab data
+    navigation.navigate('Library', {extractedVocab: vocabData});
   };
 
   return (
@@ -99,6 +119,12 @@ const AddScreen = () => {
                     </Text>
                 ))}
             </ScrollView>
+        )}
+
+        {vocabData.length > 0 && (
+            <TouchableOpacity style={styles.saveButton} onPress={saveToLibrary}>
+                <Text style={styles.saveButtonText}>Save to Library</Text>
+            </TouchableOpacity>
         )}
     </View>
   );
@@ -149,6 +175,19 @@ const styles = StyleSheet.create({
     vocabItem: {
         fontSize: 14,
         marginBottom: 5,
+    },
+    saveButton: {
+        backgroundColor: '#6F4E7C',
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        borderRadius: 10,
+        marginTop: 20,
+        alignItems: 'center',
+    },
+    saveButtonText: {
+        color: '#FFFFFF',
+        fontSize: 16,
+        fontWeight: '600',
     },
 });
 
