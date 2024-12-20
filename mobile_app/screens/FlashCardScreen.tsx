@@ -2,6 +2,10 @@ import React, {useState} from 'react';
 import {View, Text, StyleSheet, ScrollView} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Flashcard from '../components/Flashcard';
+import { RootStackParamList } from '../types/types';
+import { RouteProp, useRoute } from '@react-navigation/native';
+
+type FlashcardRouteProp = RouteProp<RootStackParamList, 'Flashcard'>;
 
 type VocabItem = {
     Word: string;
@@ -9,13 +13,10 @@ type VocabItem = {
     Definition: string;
 }
 
-const sampleVocab: VocabItem[] = [
-    { Word: '星期日', Pinyin: 'xīngqīrì', Definition: 'Sunday' },
-    { Word: '生日', Pinyin: 'shēngrì', Definition: 'Birthday' },
-    { Word: '大家', Pinyin: 'dàjiā', Definition: 'Everyone' },
-];
-
 const FlashcardScreen = () => {
+    const route = useRoute<FlashcardRouteProp>();
+    const {vocab} = route.params;
+
     const [frontContent, setFrontContent] = useState('Word');
     const [backContent, setBackContent] = useState('Definition');
 
@@ -23,35 +24,40 @@ const FlashcardScreen = () => {
         <View style={styles.container}>
             {/* Drop Down selector for front content*/}
             <View style={styles.selectorContainer}>
-                <Text style={styles.label}>Front Content:</Text>
-                <Picker
-                    selectedValue={frontContent}
-                    onValueChange={(value) => setFrontContent(value)}
-                    style={styles.picker}  
-                >
-                    <Picker.Item label="Chinese Character" value="Word" />
-                    <Picker.Item label="Pinyin" value="Pinyin" />
-                    <Picker.Item label="English Definition" value="Definition" />
-                </Picker>
+                <Text style={[styles.label, {marginTop: 30}]}>Front Content:</Text>
+                <View style={styles.pickerWrapper}>
+                    <Picker
+                        selectedValue={frontContent}
+                        onValueChange={(value) => setFrontContent(value)}
+                        style={styles.picker}
+                    >
+                        <Picker.Item label="Chinese Character" value="Word" />
+                        <Picker.Item label="Pinyin" value="Pinyin" />
+                        <Picker.Item label="English Definition" value="Definition" />
+                    </Picker>
+                </View>
             </View>
 
             {/* Drop Down selector for back content*/}
             <View style={styles.selectorContainer}>
                 <Text style={styles.label}>Back Content:</Text>
-                <Picker
-                    selectedValue={backContent}
-                    onValueChange={(value) => setBackContent(value)}
-                    style={styles.picker}  
-                >
-                    <Picker.Item label="Chinese Character" value="Word" />
-                    <Picker.Item label="Pinyin" value="Pinyin" />
-                    <Picker.Item label="English Definition" value="Definition" />
-                </Picker>
+                <View style={styles.pickerWrapper}>
+                    <Picker
+                        selectedValue={backContent}
+                        onValueChange={(value) => setBackContent(value)}
+                        style={styles.picker}
+                        itemStyle={styles.pickerItem} 
+                    >
+                        <Picker.Item label="Chinese Character" value="Word" />
+                        <Picker.Item label="Pinyin" value="Pinyin" />
+                        <Picker.Item label="English Definition" value="Definition" />
+                    </Picker>
+                </View>
             </View>
 
             {/*View scrollable flashcards*/}
             <ScrollView contentContainerStyle={styles.flashcardContainer}>
-                {sampleVocab.map((item, index) => (
+                {vocab.map((item, index) => (
                     <Flashcard
                         key={index}
                         frontContent={item[frontContent as keyof VocabItem]}
@@ -78,10 +84,24 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 5,
     },
-    picker: {
+    pickerWrapper: {
         backgroundColor: '#FFFFFF',
         borderRadius: 10,
         elevation: 2,
+        height: 120,
+        justifyContent: 'center',
+        textAlign: 'center',
+        overflow: 'hidden',
+    },
+    picker: {
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center',
+    },
+    pickerItem: {
+        fontSize: 20,
+        textAlign: 'center',
+        color: '#000',
     },
     flashcardContainer: {
         alignItems: 'center',

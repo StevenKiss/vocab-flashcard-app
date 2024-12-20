@@ -2,6 +2,8 @@ import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createStackNavigator} from '@react-navigation/stack';
+import { RootStackParamList } from './types/types'; // Import the navigation types
+
 
 import {Ionicons} from '@expo/vector-icons'; // For icons
 import {COLORS} from './constants/colors'; // To implement color scheme
@@ -9,10 +11,13 @@ import {COLORS} from './constants/colors'; // To implement color scheme
 // Import the screens
 import HomeScreen from './screens/HomeScreen';
 import LibraryScreen from './screens/LibraryScreen';
-import FlashcardScreen from './screens/FlashCardScreen';
+import FlashCardScreen from './screens/FlashCardScreen';
 import AddScreen from './screens/AddScreen';
 import CharactersScreen from './screens/CharactersScreen';
 import ProfileScreen from './screens/ProfileScreen';
+
+console.log('LibraryScreen:', LibraryScreen);
+console.log('FlashCardScreen:', FlashCardScreen);
 
 // Creating the Tab Navigator
 const Tab = createBottomTabNavigator();
@@ -26,7 +31,7 @@ function LibraryStackScreen() {
 
       {/* LibraryScreen is the default screen*/}
       <LibraryStack.Screen 
-        name="LibraryMain" 
+        name="LibraryMain"
         component={LibraryScreen} 
         options={{headerShown: false}}
       />
@@ -34,8 +39,8 @@ function LibraryStackScreen() {
       {/* Flashcard is the secondary screen */}
       <LibraryStack.Screen 
         name="Flashcard" 
-        component={FlashcardScreen}
-        options={({route}) => ({title: route.parms?.title || 'Flashcard Set'})}
+        component={FlashCardScreen}
+        options={({route}) => ({title: route.params?.title || 'Flashcard Set'})}
       />
     </LibraryStack.Navigator>
   );
