@@ -9,5 +9,5 @@ export type RootStackParamList = {
     Add: undefined;
   };
 
-// Export the RouteProp for Flashcard (optional)
+// Export the RouteProp for Flashcard 
 export type FlashcardRouteProp = RouteProp<RootStackParamList, 'Flashcard'>;
