@@ -16,9 +16,6 @@ import AddScreen from './screens/AddScreen';
 import CharactersScreen from './screens/CharactersScreen';
 import ProfileScreen from './screens/ProfileScreen';
 
-console.log('LibraryScreen:', LibraryScreen);
-console.log('FlashCardScreen:', FlashCardScreen);
-
 // Creating the Tab Navigator
 const Tab = createBottomTabNavigator();
 

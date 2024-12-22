@@ -12,11 +12,9 @@ const LibraryScreen = () => {
   const route = useRoute();
 
   useEffect(()=> {
-    console.log('Received in LibraryMain:', route.params.fileName);
-
     // Check if new vocabulary data is passed from Add Screen
     if (route.params?.extractedVocab && route.params?.fileName) {
-      console.log('Received data:', route.params);
+      console.log('Received in LibraryMain:', route.params.fileName);
 
       const newSet = {
         id: Date.now().toString(),          // Generate a unique ID
@@ -25,21 +23,27 @@ const LibraryScreen = () => {
         vocab: route.params.extractedVocab, // Vocab Data
       };
 
-      setFlashcardSets((prevSets) => [...prevSets, newSet]);
+      setFlashcardSets((prevSets) => {
+        const updatedSets = [...prevSets, newSet];
+        console.log('Flashcard sets:', updatedSets);
+        return updatedSets;
+      });
     }
   }, [route.params?.extractedVocab, route.params?.fileName])
 
   // Render each flashcard set as a button
-  const renderFlashcardSet = ({item}: {item: {id: string; title: string; description: string; vocab: any[]}}) => (
-    <TouchableOpacity
-      style={styles.flashcardButton}
-      onPress={() => navigation.navigate('Flashcard', {setId: item.id, vocab: item.vocab})}
-    >
-      <Text style={styles.flashcardButtonText}>{item.title || 'Untitled Set'}</Text>
-      <Text style={styles.flashcardDescription}>{item.description}</Text>
-    </TouchableOpacity>
-  );
-
+  const renderFlashcardSet = ({item}: {item: {id: string; title: string; description: string; vocab: any[]}}) => {
+    console.log('Rendering item:', item);
+    return (
+      <TouchableOpacity
+        style={styles.flashcardButton}
+        onPress={() => navigation.navigate('Flashcard', {setId: item.id, vocab: item.vocab, title: item.title})}
+      >
+        <Text style={styles.flashcardButtonText}>{item.title || 'Untitled Set'}</Text>
+        <Text style={styles.flashcardDescription}>{item.description}</Text>
+      </TouchableOpacity>
+    );
+  };
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Flashcard Sets</Text>
@@ -77,7 +81,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   flashcardButtonText: {
-    color: '#FFFFFF',
+    color: '#000000',
     fontSize: 16,
     fontWeight: '600',
   },
