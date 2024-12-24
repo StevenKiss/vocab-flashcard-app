@@ -11,12 +11,12 @@ import {COLORS} from './constants/colors'; // To implement color scheme
 
 // Import the screens
 import HomeScreen from './screens/HomeScreen';
-import LibraryScreen from './screens/LibraryScreen';
-import FlashcardScreen from './screens/FlashcardScreen';
-import FlashcardSettingsScreen from './screens/FlashcardSettingsScreen';
-import AddScreen from './screens/AddScreen';
-import CharactersScreen from './screens/CharactersScreen';
-import ProfileScreen from './screens/ProfileScreen';
+import LibraryScreen from './screens/LibraryScreen/LibraryScreen';
+import FlashcardScreen from './screens/FlashcardScreen/FlashcardScreen';
+import FlashcardSettingsScreen from './screens/FlashcardSettings/FlashcardSettingsScreen';
+import AddScreen from './screens/AddScreen/AddScreen';
+import CharactersScreen from './screens/CharacterScreen/CharactersScreen';
+import ProfileScreen from './screens/ProfileScreen/ProfileScreen';
 
 // Creating the Tab Navigator
 const Tab = createBottomTabNavigator();
