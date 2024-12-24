@@ -10,7 +10,7 @@ import {Ionicons} from '@expo/vector-icons'; // For icons
 import {COLORS} from './constants/colors'; // To implement color scheme
 
 // Import the screens
-import HomeScreen from './screens/HomeScreen';
+import HomeScreen from './screens/HomeScreen/HomeScreen';
 import LibraryScreen from './screens/LibraryScreen/LibraryScreen';
 import FlashcardScreen from './screens/FlashcardScreen/FlashcardScreen';
 import FlashcardSettingsScreen from './screens/FlashcardSettings/FlashcardSettingsScreen';

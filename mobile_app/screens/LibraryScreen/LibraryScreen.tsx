@@ -26,11 +26,7 @@ const LibraryScreen = () => {
         backContent: 'Definition',          // Default front content
       };
 
-      setFlashcardSets((prevSets) => {
-        const updatedSets = [...prevSets, newSet];
-        console.log('Flashcard sets:', updatedSets);
-        return updatedSets;
-      });
+      setFlashcardSets((prevSets) => [...prevSets, newSet]);
     }
   }, [route.params?.extractedVocab, route.params?.fileName])
 
