@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Animated, StatusBar } from 'react-native';
 import Swiper from 'react-native-deck-swiper';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import SafeAreaView from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import styles from './FlashcardScreen.styles';
 
@@ -48,10 +48,6 @@ const FlashcardScreen = () => {
     //     console.log(`isFront changed: ${isFront}`);
     //     flipAnim.setValue(isFront ? 0 : 180); // Ensure the animation starts correctly
     // }, [isFront]);
-
-    flipAnim.addListener(({ value }) => console.log(`flipAnim value: ${value}`));
-
-    let isFlipping = false;
 
     // Flipping Card logic
     const flipCard = () => {
