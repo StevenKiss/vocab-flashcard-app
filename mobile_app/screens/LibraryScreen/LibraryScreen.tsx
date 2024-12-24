@@ -36,7 +36,7 @@ const LibraryScreen = () => {
     return (
       <TouchableOpacity
         style={styles.flashcardButton}
-        onPress={() => navigation.navigate('Flashcard', {
+        onPress={() => navigation.navigate('FlashcardScreen', {
           setId: item.id,
           vocab: item.vocab,
           title: item.title,

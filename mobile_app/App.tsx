@@ -37,7 +37,7 @@ function LibraryStackScreen() {
 
       {/* Flashcard is the secondary screen */}
       <LibraryStack.Screen 
-        name="Flashcard" 
+        name="FlashcardScreen" 
         component={FlashcardScreen}
         options={({route}) => ({title: route.params?.title || 'Flashcard Set'})}
       />
