@@ -10,7 +10,7 @@ const FlashcardScreen = () => {
     const {vocab} = route.params; // Vocab taken from LibraryScreen
 
     const [knownWords, setKnownWords] = useState([]);
-    const [unknownWords, setUnknownWords] = useState(vocab);
+    const [unknownWords, setUnknownWords] = useState([]);
     const [frontContent, setFrontContent] = useState('Word'); // Default: Chinese Character
     const [backContent, setBackContent] = useState('Definition'); // Default: English
     const [isFront, setIsFront] = useState(true); //Tracks the card side
@@ -19,7 +19,7 @@ const FlashcardScreen = () => {
     // Progress bar logic
     useEffect(() => {
         const total = vocab.length;
-        const completed = knownWords.length + (vocab.length - unknownWords.length);
+        const completed = knownWords.length + unknownWords.length;
         const calculatedProgress = total > 0 ? completed / total : 0;
         setProgress(calculatedProgress); // Avoid floating-point issues
     }, [knownWords, unknownWords]);
@@ -64,18 +64,17 @@ const FlashcardScreen = () => {
 
     // Swipping Handling
     const handleSwipeRight = (cardIndex) => {
-        if (cardIndex >= 0 && cardIndex < unknownWords.length) {
-            const word = unknownWords[cardIndex];
+        if (cardIndex >= 0 && cardIndex < vocab.length) {
+            const word = vocab[cardIndex];
             setKnownWords((prev) => [...prev, word]);
-            setUnknownWords((prev) => prev.filter((_,i) => i !== cardIndex));
             resetCardToFront(); // Resets the card to front side after swiping
         }
     };
 
     const handleSwipeLeft = (cardIndex) => {
-        if (cardIndex >= 0 && cardIndex < unknownWords.length) {
-            setUnknownWords((prev) => prev.filter((_, i) => i !== cardIndex));
-            console.log('Word not known:', unknownWords[cardIndex]);
+        if (cardIndex >= 0 && cardIndex < vocab.length) {
+            const word = vocab[cardIndex];
+            setUnknownWords((prev) => [...prev, word]);
             resetCardToFront(); // Resets the card to the front side after swiping
         }
     };
@@ -107,7 +106,7 @@ const FlashcardScreen = () => {
                             <Text style={styles.buttonText}>Back</Text>
                         </TouchableOpacity>
                         <Text style={styles.progressText}>
-                            {knownWords.length + (vocab.length - unknownWords.length)}/{vocab.length}
+                            {knownWords.length + unknownWords.length}/{vocab.length}
                         </Text>
                         <TouchableOpacity
                             style={styles.settingsButton}
@@ -138,8 +137,8 @@ const FlashcardScreen = () => {
                     {/* Flashcard Section */}
                     <View style={styles.flashcardContainer}>
                         <Swiper
-                            key={unknownWords.length}
-                            cards={unknownWords}
+                            key={vocab.length}
+                            cards={vocab}
                             renderCard={(card) => (
                                 <View style={styles.cardWrapper}>
                                     <Animated.View
