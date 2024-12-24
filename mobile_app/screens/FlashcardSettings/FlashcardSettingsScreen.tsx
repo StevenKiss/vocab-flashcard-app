@@ -1,7 +1,8 @@
-import React, {useState} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, StatusBar} from 'react-native';
-import {Picker} from '@react-native-picker/picker';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StatusBar } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import styles from './FlashcardSettings.styles';
 
 const FlashcardSettingsScreen = ({route, navigation}) => {
     const{frontContent, backContent, setFrontContent, setBackContent} = route.params;
@@ -56,54 +57,5 @@ const FlashcardSettingsScreen = ({route, navigation}) => {
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    appContainer: {
-        flex: 1,
-        backgroundColor: '#EFE7EC',
-    },
-    safeArea: {
-        flex: 1,
-        backgroundColor: '#EFE7EC',
-    },
-    container: {
-        flex: 1,
-        padding: 20,
-    },
-    header: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
-        textAlign: 'center',
-        color: '#6F4E7C',
-    },
-    settingsContainer: {
-        marginBottom: 30,
-    },
-    label: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        marginBottom: 10,
-        color: '#6F4E7C',
-    },
-    picker: {
-        backgroundColor: '#FFFFFF',
-        borderRadius: 10,
-        marginBottom: 10,
-        elevation: 3,
-    },
-    saveButton: {
-        backgroundColor: '#6F4E7C',
-        padding: 15,
-        borderRadius: 10,
-        alignItems: 'center',
-        marginVertical: 0,
-    },
-    saveButtonText: {
-        color: '#FFFFFF',
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-});
 
 export default FlashcardSettingsScreen;
