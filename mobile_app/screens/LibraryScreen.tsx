@@ -21,6 +21,8 @@ const LibraryScreen = () => {
         title: route.params.fileName,       // Use file name as title
         description: '',                    // Blank description
         vocab: route.params.extractedVocab, // Vocab Data
+        frontContent: 'Word',               // Default front content
+        backContent: 'Definition',          // Default front content
       };
 
       setFlashcardSets((prevSets) => {
@@ -37,7 +39,14 @@ const LibraryScreen = () => {
     return (
       <TouchableOpacity
         style={styles.flashcardButton}
-        onPress={() => navigation.navigate('Flashcard', {setId: item.id, vocab: item.vocab, title: item.title})}
+        onPress={() => navigation.navigate('Flashcard', {
+          setId: item.id,
+          vocab: item.vocab,
+          title: item.title,
+          frontContent: item.frontContent,
+          backContent: item.backContent,
+        })
+      }
       >
         <Text style={styles.flashcardButtonText}>{item.title || 'Untitled Set'}</Text>
         <Text style={styles.flashcardDescription}>{item.description}</Text>
@@ -52,7 +61,10 @@ const LibraryScreen = () => {
         renderItem={renderFlashcardSet}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ paddingBottom: 20}}
-        ListEmptyComponent={<Text style={styles.emptyMessage}>No flashcard sets available. Add a new set to get started!</Text>}
+        ListEmptyComponent={
+          <Text style={styles.emptyMessage}>
+            No flashcard sets available. Add a new set to get started!
+          </Text>}
         />
     </View>
   );

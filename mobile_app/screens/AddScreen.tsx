@@ -77,6 +77,8 @@ const AddScreen = () => {
             params: {
               extractedVocab: response.data.vocab,
               fileName: file.assets[0].name.replace('.docx', ''),
+              frontContent: 'Word',
+              backContent: 'Definition',
             },
           });
     } catch (e: any) {
