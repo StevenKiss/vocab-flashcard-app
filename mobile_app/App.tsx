@@ -44,7 +44,7 @@ function LibraryStackScreen() {
 
       {/* FlaschcardSettings is the third screen*/}
       <LibraryStack.Screen
-        name="FlashcardSettings"
+        name="FlashcardSettingsScreen"
         component={FlashcardSettingsScreen}
         options={{ title: 'Flashcard Settings' }}
       />

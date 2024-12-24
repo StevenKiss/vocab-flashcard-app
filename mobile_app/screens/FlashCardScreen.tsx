@@ -18,7 +18,10 @@ const FlashcardScreen = () => {
     const [isFront, setIsFront] = useState(true); // Tracks the card side
     const [progress, setProgress] = useState(0); // Used to update Progress
     const [deckComplete, setDeckComplete] = useState(false); // Flag for end-of-deck
-    const [finished, setFinished] = useState(false); // Flag for finished deck 
+    const [finished, setFinished] = useState(false); // Flag for finished deck
+    
+    const flipAnim = useRef(new Animated.Value(0)).current; // Animation for flipping card
+    const isFlippingRef = useRef(false);
 
     // Progress bar logic
     useEffect(() => {
@@ -27,9 +30,6 @@ const FlashcardScreen = () => {
         const calculatedProgress = total > 0 ? completed / total : 0;
         setProgress(calculatedProgress);
     }, [knownWords, unknownWords]);
-
-    // Animation for flipping card
-    const flipAnim = useRef(new Animated.Value(0)).current;
 
     // Interpolations for the front and back of the card
     const frontInterpolate = flipAnim.interpolate({
@@ -42,17 +42,20 @@ const FlashcardScreen = () => {
         outputRange: ['180deg', '0deg'],
     });
 
-    // To make sure flipAnim is in sync with isFront
-    useEffect(() => {
-        console.log(`isFront changed: ${isFront}`);
-        flipAnim.setValue(isFront ? 0 : 180); // Ensure the animation starts correctly
-    }, [isFront]);
+    // // To make sure flipAnim is in sync with isFront
+    // useEffect(() => {
+    //     console.log(`isFront changed: ${isFront}`);
+    //     flipAnim.setValue(isFront ? 0 : 180); // Ensure the animation starts correctly
+    // }, [isFront]);
+
+    flipAnim.addListener(({ value }) => console.log(`flipAnim value: ${value}`));
 
     let isFlipping = false;
+
     // Flipping Card logic
     const flipCard = () => {
-        if (isFlipping) return;
-        isFlipping = true;
+        if (isFlippingRef.current) return;
+        isFlippingRef.current = true;
     
         const toValue = isFront ? 180 : 0;
     
@@ -61,8 +64,8 @@ const FlashcardScreen = () => {
             duration: 300,
             useNativeDriver: true,
         }).start(() => {
-            isFlipping = false;
-            setIsFront(!isFront); // Toggle `isFront` only after animation completes
+            setIsFront(!isFront); // Update 'isFront'
+            isFlippingRef.current = false;
         });
     };    
 
@@ -201,6 +204,7 @@ const FlashcardScreen = () => {
                                     cards={currentDeck}
                                     renderCard={(card) => (
                                         <View style={styles.cardWrapper}>
+                                            {/* Front Card */}
                                             <Animated.View
                                                 style={[
                                                     styles.card,
@@ -213,6 +217,7 @@ const FlashcardScreen = () => {
                                                 </TouchableOpacity>
                                             </Animated.View>
 
+                                            {/* Back Card */}
                                             <Animated.View
                                                 style={[
                                                     styles.card,
@@ -271,9 +276,11 @@ const styles = StyleSheet.create({
         elevation: 4,
     },
     cardFront: {
+        backfaceVisibility: 'hidden',
         backgroundColor: '#FFFFFF'
     },
     cardBack: {
+        backfaceVisibility: 'hidden',
         backgroundColor: '#DCCEF9',
     },
     cardTouchable: {
