@@ -11,18 +11,22 @@ const FlashcardScreen = () => {
     const navigation = useNavigation();
     const {vocab} = route.params; // Vocab taken from LibraryScreen
 
-    const [knownWords, setKnownWords] = useState([]); // Set known words to empty
-    const [unknownWords, setUnknownWords] = useState([]); // Set unknown words to empty
-    const [currentDeck, setCurrentDeck] = useState([...vocab]); // Current active deck
-    const [frontContent, setFrontContent] = useState('Word'); // Default: Chinese Character
-    const [backContent, setBackContent] = useState('Definition'); // Default: English
-    const [isFront, setIsFront] = useState(true); // Tracks the card side
-    const [progress, setProgress] = useState(0); // Used to update Progress
-    const [deckComplete, setDeckComplete] = useState(false); // Flag for end-of-deck
-    const [finished, setFinished] = useState(false); // Flag for finished deck
+    const [knownWords, setKnownWords] = useState([]);               // Set known words to empty
+    const [unknownWords, setUnknownWords] = useState([]);           // Set unknown words to empty
+    const [currentDeck, setCurrentDeck] = useState([...vocab]);     // Current active deck
+    const [frontContent, setFrontContent] = useState('Word');       // Default: Chinese Character
+    const [backContent, setBackContent] = useState('Definition');   // Default: English
+    const [isFront, setIsFront] = useState(true);                   // Tracks the card side
+    const [progress, setProgress] = useState(0);                    // Used to update Progress
+    const [deckComplete, setDeckComplete] = useState(false);        // Flag for end-of-deck
+    const [finished, setFinished] = useState(false);                // Flag for finished deck
+    const [isShuffleOn, setIsShuffleOn] = useState(false);          // Flag for shuffle
+    const [swipeHistory, setSwipeHistory] = useState([]);           // Track swiped cards
+    const [currentIndex, setCurrentIndex] = useState(0);            // Tracks card index
     
     const flipAnim = useRef(new Animated.Value(0)).current; // Animation for flipping card
-    const isFlippingRef = useRef(false);
+    const isFlippingRef = useRef(false); // Flipping Reference
+    const swiperRef = useRef(null); // Swiper Reference
 
     // Progress bar logic
     useEffect(() => {
@@ -43,12 +47,6 @@ const FlashcardScreen = () => {
         outputRange: ['180deg', '0deg'],
     });
 
-    // // To make sure flipAnim is in sync with isFront
-    // useEffect(() => {
-    //     console.log(`isFront changed: ${isFront}`);
-    //     flipAnim.setValue(isFront ? 0 : 180); // Ensure the animation starts correctly
-    // }, [isFront]);
-
     // Flipping Card logic
     const flipCard = () => {
         if (isFlippingRef.current) return;
@@ -68,27 +66,33 @@ const FlashcardScreen = () => {
 
     // Swipping Handling
     const handleSwipeRight = (cardIndex) => {
-        if (cardIndex >= 0 && cardIndex < currentDeck.length) {
+        if (cardIndex < currentDeck.length) {
             const word = currentDeck[cardIndex];
-            setKnownWords((prev) => [...prev, word]);
+            const newKnown = [...knownWords, word];
+            setKnownWords(newKnown);
+            setSwipeHistory((prev) => [...prev, { word, direction: 'right'}]);
+            setCurrentIndex(cardIndex + 1);
             resetCardToFront(); // Resets the card to front side after swiping
+            checkIfDeckComplete(cardIndex + 1, newKnown, unknownWords);
         }
-        checkIfDeckComplete(cardIndex);
     };
 
     const handleSwipeLeft = (cardIndex) => {
-        if (cardIndex >= 0 && cardIndex < currentDeck.length) {
+        if (cardIndex < currentDeck.length) {
             const word = currentDeck[cardIndex];
-            setUnknownWords((prev) => [...prev, word]);
+            const newUnknown = [...unknownWords, word];
+            setUnknownWords(newUnknown);
+            setSwipeHistory((prev) => [...prev, { word, direction: 'left'}]);
+            setCurrentIndex(cardIndex + 1);
             resetCardToFront(); // Resets the card to the front side after swiping
+            checkIfDeckComplete(cardIndex + 1, knownWords, newUnknown);
         }
-        checkIfDeckComplete(cardIndex);
     };
 
     // Check if deck is complete
-    const checkIfDeckComplete = (cardIndex) => {
-        if (cardIndex === currentDeck.length - 1) {
-            if (unknownWords.length == 0) {
+    const checkIfDeckComplete = (cardIndex, updatedKnown, updatedUnknown) => {
+        if (cardIndex === currentDeck.length) {
+            if (updatedUnknown.length == 0) {
                 setFinished(true);
             } else {
                 setDeckComplete(true);
@@ -100,6 +104,7 @@ const FlashcardScreen = () => {
     const restartDeck = () => {
         setKnownWords([]);
         setUnknownWords([]);
+        setCurrentIndex(0);
         setCurrentDeck([...vocab]);
         setDeckComplete(false);
         setFinished(false);
@@ -113,6 +118,7 @@ const FlashcardScreen = () => {
         setKnownWords([]);
         setUnknownWords([]);
         setDeckComplete(false);
+        setCurrentIndex(0);
         resetCardToFront();
     }
 
@@ -122,11 +128,72 @@ const FlashcardScreen = () => {
         setIsFront(true);
     }
 
-    /* FOR WHEN I WILL HAVE TO DEBUG FLASHCARD FLIPPING IMPROPERLY
-    flipAnim.addListener(({value}) => {
-        console.log(`flipAnim value: ${value}`);
-    });
-    */
+    // Shuffle logic
+    const shuffleDeck = () => {
+        const shuffledDeck = [...currentDeck];
+        for (let i = shuffledDeck.length -1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffledDeck[i], shuffledDeck[j]] = [shuffledDeck[j], shuffledDeck[i]];
+        }
+        setCurrentDeck(shuffledDeck);
+        setCurrentIndex(0);
+        resetCardToFront();
+    };
+
+    // Toggle shuffle
+    const toggleShuffle = () => {
+        console.log("Toggle shuffle");
+        setIsShuffleOn((prev) => {
+            const newstate = !prev;
+            if (newstate) shuffleDeck();
+            return newstate;
+        });
+    };
+
+    // Undo logic
+    const handleUndo = () => {
+        if (swipeHistory.length > 0 && currentIndex > 0) {
+            console.log("Undo: Before => Index:", currentIndex, "History length:", swipeHistory.length);
+
+            const lastSwipe = swipeHistory[swipeHistory.length - 1];
+            const { direction } = lastSwipe;
+
+            // Remove last entry from swipe History
+            console.log(`swipeHistory before: ${swipeHistory}`);
+            const newHistory = swipeHistory.slice(0, -1);
+            setSwipeHistory(newHistory);
+            console.log(`swipeHistory after: ${swipeHistory}`);
+
+
+            // Remove word from correct set
+            if (direction == 'right') {
+                setKnownWords((prev) => prev.slice(0, -1));
+            } else if (direction == 'left') {
+                setUnknownWords((prev) => prev.slice(0,-1));
+            }
+
+            // // Re-add word to deck at the beginning
+            // setCurrentDeck((prevDeck) => {
+            //     const newDeck = [...prevDeck];
+            //     console.log(newDeck);
+            //     newDeck.splice(currentIndex -1, 0, word);
+            //     console.log(newDeck);
+            //     return newDeck;
+            // });
+
+            setCurrentIndex((oldIndex) => (oldIndex > 0 ? oldIndex - 1 : 0));
+            resetCardToFront();
+        } else {
+            console.log("No swipes to undo");
+        }
+    };
+
+    // Re-redner the card when the index changes due to undo
+    useEffect(() => {
+        if (swiperRef.current) {
+            swiperRef.current.jumpToCardIndex(currentIndex);
+        }
+    }, [currentIndex]);
 
     return (
         <View style={styles.appContainer}>
@@ -151,11 +218,11 @@ const FlashcardScreen = () => {
                     ) : deckComplete ? (
                         <View style={styles.endContainer}>
                             <Text style={styles.endText}>Almost there, continue Learning!</Text>
-                            <TouchableOpacity style={styles.button} onPress={restartDeck}>
-                                <Text style={styles.endButtonText}>Restart Flashcards</Text>
-                            </TouchableOpacity>
                             <TouchableOpacity style={styles.button} onPress={practiceUnknownWords}>
                                 <Text style={styles.endButtonText}>Practice Remaining Flashcards</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.button} onPress={restartDeck}>
+                                <Text style={styles.endButtonText}>Restart Flashcards</Text>
                             </TouchableOpacity>
                         </View>
                     ) : (
@@ -197,6 +264,7 @@ const FlashcardScreen = () => {
                             {/* Flashcard Section */}
                             <View style={styles.flashcardContainer}>
                                 <Swiper
+                                    ref={swiperRef}
                                     key={currentDeck.length}
                                     cards={currentDeck}
                                     renderCard={(card) => (
@@ -228,12 +296,25 @@ const FlashcardScreen = () => {
                                             </Animated.View>
                                         </View>
                                     )}
+                                    cardIndex={currentIndex}
                                     onSwipedRight={(cardIndex) => handleSwipeRight(cardIndex)}
                                     onSwipedLeft={(cardIndex) => handleSwipeLeft(cardIndex)}
-                                    cardIndex={0}
-                                    backgroundColor="#EFE7EC"
                                     stackSize={3}
+                                    backgroundColor="#EFE7EC"
                                 />
+                            </View>
+
+                            {/* Bottom Section */}
+                            <View style={styles.bottomSection}>
+                                {/* Undo Button */}
+                                <TouchableOpacity style={styles.bottomButton} onPress={handleUndo}>
+                                    <Text style={styles.icon}>↩️</Text>
+                                </TouchableOpacity>
+
+                                {/* Shuffle Button */}
+                                <TouchableOpacity style={styles.bottomButton} onPress={toggleShuffle}>
+                                    <Text style={styles.icon}> {isShuffleOn ? '🔀' : '➡️'}</Text>
+                                </TouchableOpacity>
                             </View>
                         </>
                     )}

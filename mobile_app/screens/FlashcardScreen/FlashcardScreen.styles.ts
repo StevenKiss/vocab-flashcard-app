@@ -143,6 +143,34 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         textAlign: 'center',
     },
+    bottomSection: {
+        height: 60, 
+        backgroundColor: '#F7F3F7',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        borderTopWidth: 1,
+        borderTopColor: '#E0E0E0',
+    },
+    bottomButton: {
+        width: 50,
+        height: 50,
+        backgroundColor: '#6F4E7C',
+        borderRadius: 25,
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {width: 0, height: 2},
+        shadowOpacity: 0.2,
+        shadowRadius: 5,
+        elevation: 5,
+        zIndex: 10,
+    },
+    icon: {
+        fontSize: 24,
+        color: '#FFFFFF',
+    },
 });
 
 export default styles;
