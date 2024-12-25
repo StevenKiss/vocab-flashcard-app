@@ -5,15 +5,20 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import styles from './FlashcardSettings.styles';
 
 const FlashcardSettingsScreen = ({route, navigation}) => {
-    const{frontContent, backContent, setFrontContent, setBackContent} = route.params;
+    const{frontContent, backContent, vocab} = route.params;
 
     const [localFrontContent, setLocalFrontContent] = useState(frontContent);
     const [localBackContent, setLocalBackContent] = useState(backContent);
 
+    // Pass the new front and back content to parent screen
     const handleSave = () => {
-        setFrontContent(localFrontContent);
-        setBackContent(localBackContent);
-        navigation.goBack();
+        console.log(localFrontContent);
+        console.log(localBackContent);
+        navigation.navigate('FlashcardScreen', {
+            updatedFront: localFrontContent,
+            updatedBack: localBackContent,
+            vocab: vocab,
+        });
     };
 
     return (

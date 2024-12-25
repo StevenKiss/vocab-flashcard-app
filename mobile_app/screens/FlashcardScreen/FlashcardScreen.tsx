@@ -28,6 +28,18 @@ const FlashcardScreen = () => {
     const isFlippingRef = useRef(false); // Flipping Reference
     const swiperRef = useRef(null); // Swiper Reference
 
+    // When user changes flashcard content in settings
+    useEffect(() => {
+        console.log("Route params");
+        //console.log(route.params);
+        if (route.params?.updatedFront && route.params?.updatedBack) {
+          // Update the parent's states here
+          console.log("Ran this");
+          setFrontContent(route.params.updatedFront);
+          setBackContent(route.params.updatedBack);
+        }
+    }, [route.params]);
+    
     // Progress bar logic
     useEffect(() => {
         const total = currentDeck.length;
@@ -193,7 +205,7 @@ const FlashcardScreen = () => {
         if (swiperRef.current) {
             swiperRef.current.jumpToCardIndex(currentIndex);
         }
-    }, [currentIndex]);
+    }, [currentIndex, frontContent, backContent]);
 
     return (
         <View style={styles.appContainer}>
@@ -241,8 +253,7 @@ const FlashcardScreen = () => {
                                         navigation.navigate('FlashcardSettingsScreen', {
                                             frontContent,
                                             backContent,
-                                            setFrontContent,
-                                            setBackContent,
+                                            vocab,
                                         })
                                     }
                                 >
@@ -265,7 +276,7 @@ const FlashcardScreen = () => {
                             <View style={styles.flashcardContainer}>
                                 <Swiper
                                     ref={swiperRef}
-                                    key={currentDeck.length}
+                                    key={`${currentDeck.length}_${frontContent}_${backContent}`}
                                     cards={currentDeck}
                                     renderCard={(card) => (
                                         <View style={styles.cardWrapper}>

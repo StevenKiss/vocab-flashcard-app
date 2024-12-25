@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     },
     bottomSection: {
         height: 60, 
-        backgroundColor: '#F7F3F7',
+        backgroundColor: '#EFE7EC',
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
