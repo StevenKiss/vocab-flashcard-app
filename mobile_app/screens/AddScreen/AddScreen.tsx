@@ -76,7 +76,7 @@ const AddScreen = () => {
             params: {
               extractedVocab: response.data.vocab,
               fileName: file.assets[0].name.replace('.docx', ''),
-              frontContent: 'Word',
+              frontContent: 'Character',
               backContent: 'Definition',
             },
           });
@@ -116,7 +116,7 @@ const AddScreen = () => {
                 <Text style={styles.resultsHeader}>Extracted Vocabulary:</Text>
                 {vocabData.map((item, index) => (
                     <Text key={index} style={styles.vocabItem}>
-                        {item.Word} ({item.Pinyin}): {item.Definition}
+                        {item.Character} ({item.Pinyin}): {item.Definition}
                     </Text>
                 ))}
             </ScrollView>

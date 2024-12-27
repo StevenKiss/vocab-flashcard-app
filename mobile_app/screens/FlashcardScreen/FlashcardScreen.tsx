@@ -1,10 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Animated, StatusBar } from 'react-native';
+import { View, Text, TouchableOpacity, Animated, StatusBar, Alert } from 'react-native';
 import Swiper from 'react-native-deck-swiper';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import styles from './FlashcardScreen.styles';
+import Icon from 'react-native-vector-icons/MaterialIcons'
+import { addFlashcard, getAllFlashcards } from '../../firebase/firestore';
 
 const FlashcardScreen = () => {
     const route = useRoute();
@@ -14,7 +16,7 @@ const FlashcardScreen = () => {
     const [knownWords, setKnownWords] = useState([]);               // Set known words to empty
     const [unknownWords, setUnknownWords] = useState([]);           // Set unknown words to empty
     const [currentDeck, setCurrentDeck] = useState([...vocab]);     // Current active deck
-    const [frontContent, setFrontContent] = useState('Word');       // Default: Chinese Character
+    const [frontContent, setFrontContent] = useState('Character');       // Default: Chinese Character
     const [backContent, setBackContent] = useState('Definition');   // Default: English
     const [isFront, setIsFront] = useState(true);                   // Tracks the card side
     const [progress, setProgress] = useState(0);                    // Used to update Progress
@@ -27,6 +29,26 @@ const FlashcardScreen = () => {
     const flipAnim = useRef(new Animated.Value(0)).current; // Animation for flipping card
     const isFlippingRef = useRef(false); // Flipping Reference
     const swiperRef = useRef(null); // Swiper Reference
+
+    // // Add Flashcards to Firestore
+    // const saveFlashcardsToDatabase = async() => {
+    //     try {
+    //         if (!vocab || vocab.length === 0) {
+    //             Alert.alert('No Vocab', 'No vocab data to save');
+    //             return;
+    //         }
+
+    //         // Loop through vocab array and save each flashcard
+    //         for (const word of vocab) {
+    //             await addFlashcard({
+    //                 character: word.character || 'No character',
+    //                 pinyin: word.pinyin || 'No pinting',
+    //             });
+    //         }
+    //     } catch(error) {
+    //         console.error('Error adding flashcards:', error);
+    //     }
+    // };
 
     // When user changes flashcard content in settings
     useEffect(() => {
@@ -61,6 +83,7 @@ const FlashcardScreen = () => {
 
     // Flipping Card logic
     const flipCard = () => {
+        console.log('flipCard called. isFront =', isFront);
         if (isFlippingRef.current) return;
         isFlippingRef.current = true;
     
@@ -71,7 +94,10 @@ const FlashcardScreen = () => {
             duration: 300,
             useNativeDriver: true,
         }).start(() => {
-            setIsFront(!isFront); // Update 'isFront'
+            setIsFront((prevIsFront) => {
+                console.log('Animation done. Setting isFront to', !prevIsFront);
+                return !prevIsFront;
+            }); // Update 'isFront'
             isFlippingRef.current = false;
         });
     };    
@@ -241,14 +267,14 @@ const FlashcardScreen = () => {
                         <>
                             {/* Header Section */}
                             <View style={styles.header}>
-                                <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                                    <Text style={styles.buttonText}>Back</Text>
+                                <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('LibraryMain')}>
+                                    <Icon name="arrow-back-ios-new" size={24} color ="#6F4E7C"/>
                                 </TouchableOpacity>
                                 <Text style={styles.progressText}>
                                     {knownWords.length + unknownWords.length}/{currentDeck.length}
                                 </Text>
                                 <TouchableOpacity
-                                    style={styles.settingsButton}
+                                    style={styles.navButton}
                                     onPress={() =>
                                         navigation.navigate('FlashcardSettingsScreen', {
                                             frontContent,
@@ -257,7 +283,7 @@ const FlashcardScreen = () => {
                                         })
                                     }
                                 >
-                                    <Text style={styles.buttonText}>Settings</Text>
+                                    <Icon name="settings" size={24} color="#6F4E7C" />
                                 </TouchableOpacity>
                             </View>
 
@@ -280,31 +306,40 @@ const FlashcardScreen = () => {
                                     cards={currentDeck}
                                     renderCard={(card) => (
                                         <View style={styles.cardWrapper}>
-                                            {/* Front Card */}
-                                            <Animated.View
-                                                style={[
-                                                    styles.card,
-                                                    styles.cardFront,
-                                                    {transform: [{rotateY: frontInterpolate}]},
-                                                ]}
-                                            >
-                                                <TouchableOpacity style={styles.cardTouchable} onPress={flipCard}>
+                                            <TouchableOpacity onPress={flipCard} activeOpacity={1} style={styles.cardTouchable}>
+                                                {/* Front Card */}
+                                                <Animated.View
+                                                    style={[
+                                                        styles.card,
+                                                        styles.cardFront,
+                                                        {transform: [
+                                                            {perspective: 1000},
+                                                            {rotateY: frontInterpolate}
+                                                        ],
+                                                        backfaceVisibility: 'hidden',
+                                                        },
+                                                    ]}
+                                                >
                                                     <Text style={styles.cardText}>{card[frontContent]}</Text>
-                                                </TouchableOpacity>
-                                            </Animated.View>
+                                                </Animated.View>
 
-                                            {/* Back Card */}
-                                            <Animated.View
-                                                style={[
-                                                    styles.card,
-                                                    styles.cardBack,
-                                                    {transform: [{rotateY: backInterpolate}]},
-                                                ]}
-                                            >
-                                                <TouchableOpacity style={styles.cardTouchable} onPress={flipCard}>
+                                                {/* Back Card */}
+                                                <Animated.View
+                                                    style={[
+                                                        styles.card,
+                                                        styles.cardBack,
+                                                        {transform: [
+                                                            {perspective: 1000},
+                                                            {rotateY: backInterpolate}
+                                                        ],
+                                                        backfaceVisibility: 'hidden',
+                                                        position: 'absolute',
+                                                        },
+                                                    ]}
+                                                >
                                                     <Text style={styles.cardText}>{card[backContent]}</Text>
-                                                </TouchableOpacity>
-                                            </Animated.View>
+                                                </Animated.View>
+                                            </TouchableOpacity>
                                         </View>
                                     )}
                                     cardIndex={currentIndex}
@@ -318,14 +353,13 @@ const FlashcardScreen = () => {
                             {/* Bottom Section */}
                             <View style={styles.bottomSection}>
                                 {/* Undo Button */}
-                                <TouchableOpacity style={styles.bottomButton} onPress={handleUndo}>
-                                    <Text style={styles.icon}>↩️</Text>
+                                <TouchableOpacity style={styles.navButton} onPress={handleUndo}>
+                                    <Icon name="undo" size={30} color="#6F4E7C" />
                                 </TouchableOpacity>
 
                                 {/* Shuffle Button */}
-                                <TouchableOpacity style={styles.bottomButton} onPress={toggleShuffle}>
-                                    <Text style={styles.icon}> {isShuffleOn ? '🔀' : '➡️'}</Text>
-                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.navButton} onPress={toggleShuffle}>
+                                    <Icon name={isShuffleOn ? 'shuffle-on' : 'shuffle'} size={24} color="#6F4E7C" />                                </TouchableOpacity>
                             </View>
                         </>
                     )}

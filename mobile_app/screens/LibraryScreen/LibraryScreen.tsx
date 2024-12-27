@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { View, Text, TouchableOpacity, FlatList } from 'react-native';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp, useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../types/types';
 import styles from './LibraryScreen.styles';
@@ -22,7 +22,7 @@ const LibraryScreen = () => {
         title: route.params.fileName,       // Use file name as title
         description: '',                    // Blank description
         vocab: route.params.extractedVocab, // Vocab Data
-        frontContent: 'Word',               // Default front content
+        frontContent: 'Character',          // Default front content
         backContent: 'Definition',          // Default front content
       };
 

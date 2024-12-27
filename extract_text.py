@@ -69,8 +69,8 @@ def extract_text(file_path):
 
 def extract_vocab(text):
     """
-    Extract the Mandarin words, pinyin, and definitions using regular expression.
-    Structure is: Word, pinyin: definition, example usage
+    Extract the Mandarin characters, pinyin, and definitions using regular expression.
+    Structure is: Character, pinyin: definition, example usage
     """
 
     # Remove headers
@@ -87,10 +87,10 @@ def extract_vocab(text):
     # Create dictionaries to organize results
     vocab_list = []
     for match in matches:
-        word = match[0].strip(", ")
+        character = match[0].strip(", ")
         pinyin = match[1]
         definition = match[2]
-        vocab_list.append({"Word": word, "Pinyin": pinyin, "Definition": definition})
+        vocab_list.append({"Character": character, "Pinyin": pinyin, "Definition": definition})
     print(vocab_list)
     return vocab_list
 
@@ -107,7 +107,7 @@ def save_vocab_to_file(file_path, vocab_list):
     with open(new_file_name, "w", encoding="utf-8") as f:
         for entry in vocab_list:
             print(entry)
-            f.write(f"Word: {entry['Word']}\n")
+            f.write(f"Character: {entry['Character']}\n")
             f.write(f"Pinyin: {entry['Pinyin']}\n")
             f.write(f"Definition: {entry['Definition']}\n")
             f.write("\n")
@@ -133,7 +133,7 @@ if __name__ == "__main__":
             print("\nExtracted Vocab:\n")
             vocab_list = extract_vocab(text)
             for vocab in vocab_list:
-                print(f"{vocab['Word']} ({vocab['Pinyin']}): {vocab['Definition']}")
+                print(f"{vocab['Character']} ({vocab['Pinyin']}): {vocab['Definition']}")
 
 
             # Save vocab to file

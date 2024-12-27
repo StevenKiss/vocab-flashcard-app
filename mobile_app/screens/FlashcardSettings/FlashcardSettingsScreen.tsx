@@ -39,7 +39,7 @@ const FlashcardSettingsScreen = ({route, navigation}) => {
                             onValueChange={(value) => setLocalFrontContent(value)}
                             style={styles.picker}
                         >
-                            <Picker.Item label="Chinese Word" value="Word" />
+                            <Picker.Item label="Chinese Character" value="Character" />
                             <Picker.Item label="Pinyin" value="Pinyin" />
                             <Picker.Item label="English Definition" value="Definition" />
                         </Picker>
@@ -49,7 +49,7 @@ const FlashcardSettingsScreen = ({route, navigation}) => {
                             onValueChange={(value) => setLocalBackContent(value)}
                             style={styles.picker}
                         >
-                            <Picker.Item label="Chinese Word" value="Word" />
+                            <Picker.Item label="Chinese Character" value="Character" />
                             <Picker.Item label="Pinyin" value="Pinyin" />
                             <Picker.Item label="English Definition" value="Definition" />
                         </Picker>

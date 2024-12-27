@@ -60,11 +60,9 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#6F4E7C',
     },
-    backButton: {
+    navButton: {
         padding: 10,
-    },
-    settingsButton: {
-        padding: 10,
+        zIndex: 10,
     },
     buttonText: {
         fontSize: 16,
@@ -150,8 +148,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingHorizontal: 20,
-        borderTopWidth: 1,
-        borderTopColor: '#E0E0E0',
     },
     bottomButton: {
         width: 50,

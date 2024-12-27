@@ -25,7 +25,7 @@ def main():
             print("\nExtracted Vocab:\n")
             vocab_list = extract_vocab(text)
             for vocab in vocab_list:
-                print(f"{vocab['Word']} ({vocab['Pinyin']}): {vocab['Definition']}")
+                print(f"{vocab['Character']} ({vocab['Pinyin']}): {vocab['Definition']}")
 
 
             # Save vocab to file

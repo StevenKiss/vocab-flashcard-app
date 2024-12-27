@@ -18,7 +18,7 @@ def save_vocab_to_file(file_path, vocab_list):
     with open(output_file_path, "w", encoding="utf-8") as f:
         for entry in vocab_list:
             print(entry)
-            f.write(f"Word: {entry['Word']}\n")
+            f.write(f"Character: {entry['Character']}\n")
             f.write(f"Pinyin: {entry['Pinyin']}\n")
             f.write(f"Definition: {entry['Definition']}\n")
             f.write("\n")

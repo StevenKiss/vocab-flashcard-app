@@ -2,8 +2,8 @@ import re
 
 def extract_vocab(text):
     """
-    Extract the Mandarin words, pinyin, and definitions using regular expression.
-    Structure is: Word, pinyin: definition, example usage
+    Extract the Mandarin Characters, pinyin, and definitions using regular expression.
+    Structure is: Character, pinyin: definition, example usage
     """
 
     # Remove headers
@@ -21,9 +21,9 @@ def extract_vocab(text):
     # Create dictionaries to organize results
     vocab_list = []
     for match in matches:
-        word = match[0].strip(", ")
+        character = match[0].strip(", ")
         pinyin = match[1]
         definition = match[2]
-        vocab_list.append({"Word": word, "Pinyin": pinyin, "Definition": definition})
+        vocab_list.append({"Character": character, "Pinyin": pinyin, "Definition": definition})
     print(vocab_list)
     return vocab_list
