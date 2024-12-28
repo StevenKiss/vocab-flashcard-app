@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "640248646162",
+    "project_id": "chineseapp-7f543",
+    "storage_bucket": "chineseapp-7f543.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:640248646162:android:e58d81a1a479211a9726cb",
+        "android_client_info": {
+          "package_name": "com.KissIndustries.ChineseVocabApp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCEBZeQJ0Iwq_dtNWJZk_tJ4Hlivy2td8Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

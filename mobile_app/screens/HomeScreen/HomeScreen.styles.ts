@@ -1,79 +1,60 @@
-import { StyleSheet } from "react-native";
-import {COLORS} from '../../constants/colors';
+import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#EFE7EC', // Light sort purple/white background color
-        padding: 20,
-    },
-    greeting: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        color: '#6F4E7C', // Soft Purple
-        marginTop: 40,
-    },
-    streakContainer: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginVertical: 20,
-    },
-    streakNumber: {
-        fontSize: 80,
-        fontWeight: 'bold',
-        color: '#6F4E7C', // Soft purple
-    },
-    streakLabel: {
-        fontSize: 18,
-        color: '#6F4E7C',
-        marginTop: 5,
-    },
-    buttonContainer: {
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    button: {
-        backgroundColor: '#6F4E7C', // Soft Purple
-        paddingVertical: 12,
+        backgroundColor: '#EFE7EC',
         paddingHorizontal: 20,
-        borderRadius: 10,
-        marginVertical: 10,
-        width: '80%',
-        alignItems: 'center',
-    },
-    buttonText: {
-        color: '#FFFFFF',
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    topSection: {
-        flex: 1,
         justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 20,
+    },
+    safeArea: {
+        flex: 1,
+        backgroundColor: 'EFE7EC',
     },
     headerText: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#6F4E7C', // Soft purple color
+        color: '#6F4E7C',
+        textAlign: 'center',
+        marginBottom: 20,
     },
-    bottomSection: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 40,
+    subHeaderText: {
+        fontSize: 18,
+        color: '#6F4E7C',
+        textAlign: 'center',
+        marginBottom: 30,
     },
-    libraryHeader: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#6F4E7C', // Soft Purple Color
-        marginBottom: 10,
-    },
-    placeholder: {
+    input: {
+        backgroundColor: 'FFF',
+        padding: 12,
+        borderRadius: 10,
+        marginBottom: 15,
         fontSize: 16,
-        color: '#aaa',
+        borderWidth: 1,
+        borderColor: '#D3D3D3',
     },
-});
+    button: {
+        backgroundColor: '#6F4E7C',
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        borderRadius: 10,
+        marginVertical: 10,
+        width: '100%',
+        alignItems: 'center'
+    },
+    buttonText: {
+        color: '#FFF',
+        fontSize: 20,
+        textAlign: 'center',
+        marginTop: 0,
+    },
+    toggleText: {
+        color: '#6F4E7C',
+        fontSize: 14,
+        textAlign: 'center',
+        marginTop: 15,
+        textDecorationLine: 'underline',
+    },
+})
 
 export default styles;

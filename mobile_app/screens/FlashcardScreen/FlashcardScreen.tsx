@@ -42,11 +42,15 @@ const FlashcardScreen = () => {
     //         for (const word of vocab) {
     //             await addFlashcard({
     //                 character: word.character || 'No character',
-    //                 pinyin: word.pinyin || 'No pinting',
+    //                 pinyin: word.pinyin || 'No pinyin',
+    //                 definition: word.definition || 'No definition',
     //             });
     //         }
+
+    //         Alert.alert('Success', 'Flashcards added successfully!');
     //     } catch(error) {
     //         console.error('Error adding flashcards:', error);
+    //         Alert.alert('Error', 'Failed to save flashcards to the databse.');
     //     }
     // };
 
