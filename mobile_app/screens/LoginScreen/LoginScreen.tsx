@@ -25,15 +25,10 @@ const LoginScreen = () => {
                     // Login with username and email
                     console.log("Login with username");
                     const usersRef = collection(db, "users");
-                    console.log("made it passed ref");
                     const q = query(usersRef, where("username", "==", email));
-                    console.log("Made it passed query");
                     const querySnapshot = await getDocs(q);
-                    console.log("Query snapshot:", querySnapshot.docs.map(doc => doc.data()));
 
-                    console.log("Finished query");
                     if (!querySnapshot.empty) {
-                        console.log("Query worked");
                         const userDoc = querySnapshot.docs[0];
                         const userEmail = userDoc.data().email;
 

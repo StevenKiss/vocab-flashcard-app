@@ -37,14 +37,54 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 20,
         borderRadius: 10,
-        marginTop: 20,
-        width: '80%',
+        marginTop: 10,
+        width: '100%',
         alignItems: 'center',
     },
     buttonText: {
         color: '#FFFFFF',
         fontSize: 16,
         fontWeight: '600',
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)'
+    },
+    modalContent: {
+        backgroundColor: '#FFF',
+        padding: 20,
+        borderRadius: 10,
+        width: '80%',
+        alignItems: 'center',
+    },
+    modalHeader: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 10,
+        color: '#6f4E7C',
+    },
+    input: {
+        width: '100%',
+        backgroundColor: '#EFE7EC',
+        padding: 10,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#D3D3D3',
+    },
+    cancelButton: {
+        marginTop: 10,
+        backgroundColor: '#D3D3D3',
+        width: '100%',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 10,
+        alignItems: 'center',
+    },
+    cancelButtonText: {
+        color: '#000',
+        fontSize: 16,
     },
 });
 
