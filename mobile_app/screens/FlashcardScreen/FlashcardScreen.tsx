@@ -16,16 +16,17 @@ const FlashcardScreen = () => {
     const [knownWords, setKnownWords] = useState([]);               // Set known words to empty
     const [unknownWords, setUnknownWords] = useState([]);           // Set unknown words to empty
     const [currentDeck, setCurrentDeck] = useState([...vocab]);     // Current active deck
-    const [frontContent, setFrontContent] = useState('Character');       // Default: Chinese Character
+    const [frontContent, setFrontContent] = useState('Character');  // Default: Chinese Character
     const [backContent, setBackContent] = useState('Definition');   // Default: English
-    const [isFront, setIsFront] = useState(true);                   // Tracks the card side
     const [progress, setProgress] = useState(0);                    // Used to update Progress
     const [deckComplete, setDeckComplete] = useState(false);        // Flag for end-of-deck
     const [finished, setFinished] = useState(false);                // Flag for finished deck
     const [isShuffleOn, setIsShuffleOn] = useState(false);          // Flag for shuffle
     const [swipeHistory, setSwipeHistory] = useState([]);           // Track swiped cards
     const [currentIndex, setCurrentIndex] = useState(0);            // Tracks card index
-    
+
+    const isFront = useRef(true);                                   // Tracks the card side, Ref to hold value between rerenders
+
     const flipAnim = useRef(new Animated.Value(0)).current; // Animation for flipping card
     const isFlippingRef = useRef(false); // Flipping Reference
     const swiperRef = useRef(null); // Swiper Reference
@@ -74,16 +75,31 @@ const FlashcardScreen = () => {
         setProgress(calculatedProgress);
     }, [knownWords, unknownWords]);
 
-    // Interpolations for the front and back of the card
+    // Front card rotation
     const frontInterpolate = flipAnim.interpolate({
         inputRange: [0, 180],
         outputRange: ['0deg', '180deg'],
     });
 
+    const flipToFrontStyle = {
+        transform: [
+            {rotateY: frontInterpolate},
+            {perspective: 1000},
+        ]
+    };
+
+    // Back card rotation
     const backInterpolate = flipAnim.interpolate({
         inputRange: [0, 180],
-        outputRange: ['180deg', '0deg'],
+        outputRange: ['180deg', '360deg'],
     });
+
+    const flipToBackStyle = {
+        transform: [
+            {rotateY: backInterpolate},
+            {perspective: 1000},
+        ]
+    };
 
     // Flipping Card logic
     const flipCard = () => {
@@ -91,17 +107,13 @@ const FlashcardScreen = () => {
         if (isFlippingRef.current) return;
         isFlippingRef.current = true;
     
-        const toValue = isFront ? 180 : 0;
-    
+        const toValue = isFront.current ? 180 : 0;
         Animated.timing(flipAnim, {
-            toValue, // Rotate to 180 or back to 0
+            toValue,
             duration: 300,
             useNativeDriver: true,
         }).start(() => {
-            setIsFront((prevIsFront) => {
-                console.log('Animation done. Setting isFront to', !prevIsFront);
-                return !prevIsFront;
-            }); // Update 'isFront'
+            isFront.current = !isFront.current;
             isFlippingRef.current = false;
         });
     };    
@@ -167,7 +179,7 @@ const FlashcardScreen = () => {
     // Reseting card to front handling
     const resetCardToFront = () => {
         flipAnim.setValue(0);
-        setIsFront(true);
+        isFront.current = true;
     }
 
     // Shuffle logic
@@ -213,15 +225,6 @@ const FlashcardScreen = () => {
             } else if (direction == 'left') {
                 setUnknownWords((prev) => prev.slice(0,-1));
             }
-
-            // // Re-add word to deck at the beginning
-            // setCurrentDeck((prevDeck) => {
-            //     const newDeck = [...prevDeck];
-            //     console.log(newDeck);
-            //     newDeck.splice(currentIndex -1, 0, word);
-            //     console.log(newDeck);
-            //     return newDeck;
-            // });
 
             setCurrentIndex((oldIndex) => (oldIndex > 0 ? oldIndex - 1 : 0));
             resetCardToFront();
@@ -316,15 +319,10 @@ const FlashcardScreen = () => {
                                                     style={[
                                                         styles.card,
                                                         styles.cardFront,
-                                                        {transform: [
-                                                            {perspective: 1000},
-                                                            {rotateY: frontInterpolate}
-                                                        ],
-                                                        backfaceVisibility: 'hidden',
-                                                        },
+                                                        flipToFrontStyle,
                                                     ]}
                                                 >
-                                                    <Text style={styles.cardText}>{card[frontContent]}</Text>
+                                                    <Text style={styles.cardText}>{card[frontContent] || 'No content'}</Text>
                                                 </Animated.View>
 
                                                 {/* Back Card */}
@@ -332,16 +330,10 @@ const FlashcardScreen = () => {
                                                     style={[
                                                         styles.card,
                                                         styles.cardBack,
-                                                        {transform: [
-                                                            {perspective: 1000},
-                                                            {rotateY: backInterpolate}
-                                                        ],
-                                                        backfaceVisibility: 'hidden',
-                                                        position: 'absolute',
-                                                        },
+                                                        flipToBackStyle,
                                                     ]}
                                                 >
-                                                    <Text style={styles.cardText}>{card[backContent]}</Text>
+                                                    <Text style={styles.cardText}>{card[backContent] || 'No content'}</Text>
                                                 </Animated.View>
                                             </TouchableOpacity>
                                         </View>
@@ -363,7 +355,8 @@ const FlashcardScreen = () => {
 
                                 {/* Shuffle Button */}
                                 <TouchableOpacity style={styles.navButton} onPress={toggleShuffle}>
-                                    <Icon name={isShuffleOn ? 'shuffle-on' : 'shuffle'} size={24} color="#6F4E7C" />                                </TouchableOpacity>
+                                    <Icon name={isShuffleOn ? 'shuffle-on' : 'shuffle'} size={24} color="#6F4E7C" />
+                                </TouchableOpacity>
                             </View>
                         </>
                     )}

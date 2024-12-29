@@ -30,11 +30,9 @@ const styles = StyleSheet.create({
         elevation: 4,
     },
     cardFront: {
-        backfaceVisibility: 'hidden',
         backgroundColor: '#FFFFFF'
     },
     cardBack: {
-        backfaceVisibility: 'hidden',
         backgroundColor: '#DCCEF9',
     },
     cardTouchable: {
