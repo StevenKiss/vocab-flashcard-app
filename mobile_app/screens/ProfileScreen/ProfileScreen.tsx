@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Alert, StatusBar, TextInput, Modal } from 'react-native';
-import { signOut, updateEmail, updatePassword } from 'firebase/auth';
+import { signOut, sendPasswordResetEmail, updateEmail, sendEmailVerification } from 'firebase/auth';
 import { getDoc, updateDoc, doc } from 'firebase/firestore';
 import { auth, db } from '../../firebase/firebaseConfig';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,12 +8,8 @@ import styles from './ProfileScreen.styles'
 
 const ProfileScreen = () => {
   const [username, setUsername] = useState('');
-  const [isEditingEmail, setIsEditingEmail] = useState(false);
   const [isEditingUsername, setIseditingUsername] = useState(false);
-  const [isEditingPassword, setIsEditingPassword] = useState(false);
-  const [newEmail, setNewEmail] = useState(false);
   const [newUsername, setNewUsername] = useState('');
-  const [newPassword, setNewPassword] = useState('');
 
   // Get the username
   useEffect(() => {
@@ -43,34 +39,36 @@ const ProfileScreen = () => {
     }
   };
 
-  const handleUpdateEmail = async () => {
-    try {
-      await updateEmail(auth.currentUser, newEmail);
-      Alert.alert('Success', 'Email updated Successfully.');
-      setIsEditingEmail(false);
-    } catch (error) {
-      Alert.alert('Error', 'Failed to update email. Please try again.');
-    }
-  };
-
   const handleUpdateUsername = async () => {
     try {
       const userDoc = doc(db, 'users', auth.currentUser.uid);
       await updateDoc(userDoc, { username: newUsername });
+      setUsername(newUsername);
+
       Alert.alert('Success', 'Username updated successfully.');
+
       setIseditingUsername(false);
     } catch (error) {
       Alert.alert('Error', 'Failed to update username. Please try again.');
     }
   };
 
-  const handleUpdatePassword = async () => {
+  const handlePasswordReset = async () => {
     try {
-      await updatePassword(auth.currentUser, newPassword);
-      Alert.alert('Success', 'Password updated successfully.');
-      setIsEditingPassword(false);
+      console.log("Running password reset");
+      await sendPasswordResetEmail(auth, auth.currentUser.email);
+      Alert.alert('Password Reset', 'A password reset email has been sent to your registered email address');
     } catch (error) {
       Alert.alert('Error', 'Failed to update password. Please try again.');
+    }
+  };
+
+  const handleEmailChangeRequest = async () => {
+    try {
+      await sendEmailVerification(auth.currentUser);
+      Alert.alert('Email Change','A verification email has been sent to your current email address. Please follow the instruction to update your email.');
+    } catch (error) {
+      Alert.alert('Error', 'Failed to send email verification. Please try again.');
     }
   };
   
@@ -83,27 +81,6 @@ const ProfileScreen = () => {
           <Text style={styles.infoText}>Email: {auth.currentUser?.email}</Text>
           <Text style={styles.infoText}>Username: {username || 'Fetching...'}</Text>
         </View>
-
-        {/* Edit Email Modal */}
-        <Modal visible={isEditingEmail} transparent>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalHeader}>Update Email</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter new email"
-                value={newEmail}
-                onChangeText={setNewEmail}
-              />
-              <TouchableOpacity style={styles.button} onPress={handleUpdateEmail}>
-                <Text style={styles.buttonText}>Update Email</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.cancelButton} onPress={() => setIsEditingEmail(false)}>
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
 
         {/* Edit Username Modal */}
         <Modal visible={isEditingUsername} transparent>
@@ -126,36 +103,14 @@ const ProfileScreen = () => {
           </View>
         </Modal>
 
-        {/* Edit Password Modal */}
-        <Modal visible={isEditingPassword} transparent>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalHeader}>Update Password</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter new password"
-                secureTextEntry
-                value={newPassword}
-                onChangeText={setNewPassword}
-              />
-              <TouchableOpacity style={styles.button} onPress={handleUpdatePassword}>
-                <Text style={styles.buttonText}>Update Password</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.cancelButton} onPress={() => setIsEditingPassword(false)}>
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-
         {/* Update Info Buttons */}
-        <TouchableOpacity style={styles.button} onPress={() => setIsEditingEmail(true)}>
+        <TouchableOpacity style={styles.button} onPress={handleEmailChangeRequest}>
           <Text style={styles.buttonText}>Change Email</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={() => setIseditingUsername(true)}>
           <Text style={styles.buttonText}>Change Username</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => setIsEditingPassword(true)}>
+        <TouchableOpacity style={styles.button} onPress={handlePasswordReset}>
           <Text style={styles.buttonText}>Change Password</Text>
         </TouchableOpacity>
 
