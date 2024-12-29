@@ -4,20 +4,56 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'fire
 import { auth } from '../../firebase/firebaseConfig';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import styles from './LoginScreen.styles';
+import { query, where, collection, getDocs, setDoc, doc } from 'firebase/firestore';
+import { db } from '../../firebase/firebaseConfig';
 
 const LoginScreen = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [username, setUsername] = useState('');
     const [isLogin, setIsLogin] = useState(true); // Login vs. Sign-up
     const [errorMessage, setErrorMessage] = useState('');
 
     const handleAuth = async () => {
         try {
             if (isLogin) {
-                const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                console.log('Logged in:', userCredential.user);
+                if (email.includes("@")) {
+                    // Login with email and password
+                    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                    console.log('Logged in:', userCredential.user);
+                } else {
+                    // Login with username and email
+                    console.log("Login with username");
+                    const usersRef = collection(db, "users");
+                    console.log("made it passed ref");
+                    const q = query(usersRef, where("username", "==", email));
+                    console.log("Made it passed query");
+                    const querySnapshot = await getDocs(q);
+                    console.log("Query snapshot:", querySnapshot.docs.map(doc => doc.data()));
+
+                    console.log("Finished query");
+                    if (!querySnapshot.empty) {
+                        console.log("Query worked");
+                        const userDoc = querySnapshot.docs[0];
+                        const userEmail = userDoc.data().email;
+
+                        const userCredential = await signInWithEmailAndPassword(auth, userEmail, password);
+                        console.log("Logged in with username:", userCredential.user);
+                    } else {
+                        setErrorMessage("Username not found");
+                        throw new Error("Username not found");
+                    }
+                }
             } else {
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const uid = userCredential.user.uid;
+
+                // Save username in Firestore
+                await setDoc(doc(db, "users", uid), {
+                    username,
+                    email,
+                });
+
                 console.log('Account created:', userCredential.user);
             }
         } catch (error) {
@@ -38,7 +74,7 @@ const LoginScreen = () => {
                     setErrorMessage('Incorrect password. Please try again.');
                     break;
                 case 'auth/email-already-in-use':
-                    setErrorMessage('Email is alrady in use. Please use a differnt one.');
+                    setErrorMessage('Email is already in use. Please use a differnt one.');
                     break;
                 case 'auth/weak-password':
                     setErrorMessage('Password is too weak. Use a stronger password.');
@@ -62,10 +98,18 @@ const LoginScreen = () => {
 
                 <TextInput
                     style={styles.input}
-                    placeholder='Email'
+                    placeholder={isLogin ? 'Email/Username' : 'Email'}
                     value={email}
                     onChangeText={setEmail}
                 />
+                {isLogin ? null : (
+                <TextInput
+                style={styles.input}
+                placeholder='Username'
+                value={username}
+                onChangeText={setUsername}
+                /> 
+                )}
                 <TextInput
                     style={styles.input}
                     placeholder='Password'
@@ -73,6 +117,7 @@ const LoginScreen = () => {
                     value={password}
                     onChangeText={setPassword}
                 />
+
                 {errorMessage ? (
                     <Text style={styles.errorText}>{errorMessage}</Text>
                 ) : null }
