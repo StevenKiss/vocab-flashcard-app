@@ -7,6 +7,7 @@ import styles from './LoginScreen.styles';
 import { query, where, collection, getDocs, setDoc, doc } from 'firebase/firestore';
 import { db } from '../../firebase/firebaseConfig';
 
+
 const LoginScreen = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -44,9 +45,16 @@ const LoginScreen = () => {
                 const uid = userCredential.user.uid;
 
                 // Save username in Firestore
-                await setDoc(doc(db, "users", uid), {
+                const userRef = doc(db, "users", uid);
+                await setDoc(userRef, {
                     username,
                     email,
+                });
+
+                //Create vocabests
+                await setDoc(doc(db, `users/${uid}/vocabsets`, "_metadata"), {
+                    createdAt: new Date(),
+                    description: "Metadata for vocabsets collection",
                 });
 
                 console.log('Account created:', userCredential.user);
@@ -97,6 +105,13 @@ const LoginScreen = () => {
                     value={email}
                     onChangeText={setEmail}
                 />
+                <TextInput
+                    style={styles.input}
+                    placeholder='Password'
+                    secureTextEntry
+                    value={password}
+                    onChangeText={setPassword}
+                />
                 {isLogin ? null : (
                 <TextInput
                 style={styles.input}
@@ -105,13 +120,6 @@ const LoginScreen = () => {
                 onChangeText={setUsername}
                 /> 
                 )}
-                <TextInput
-                    style={styles.input}
-                    placeholder='Password'
-                    secureTextEntry
-                    value={password}
-                    onChangeText={setPassword}
-                />
 
                 {errorMessage ? (
                     <Text style={styles.errorText}>{errorMessage}</Text>
