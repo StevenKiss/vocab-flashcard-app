@@ -341,6 +341,8 @@ const FlashcardScreen = () => {
                                     cardIndex={currentIndex}
                                     onSwipedRight={(cardIndex) => handleSwipeRight(cardIndex)}
                                     onSwipedLeft={(cardIndex) => handleSwipeLeft(cardIndex)}
+                                    onSwipedTop={(cardIndex) => handleSwipeRight(cardIndex)}
+                                    onSwipedBottom={(cardIndex) => handleSwipeLeft(cardIndex)}
                                     stackSize={3}
                                     backgroundColor="#EFE7EC"
                                 />
