@@ -12,7 +12,10 @@ import axios from 'axios'; // Necessary to send request to the Flask API
 import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../types/types';
+import { auth, db } from '../../firebase/firebaseConfig';
+import { collection, addDoc } from 'firebase/firestore';
 import styles from './AddScreen.styles';
+
 type AddScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Add'>;
 
 const AddScreen = () => {
@@ -65,21 +68,22 @@ const AddScreen = () => {
             },
         });
 
-        console.log('Navigating to LibraryMain with data:', {
-            extractedVocab: response.data.vocab,
-            fileName: file.assets[0].name.replace('.docx', ''),
+        const extractedVocab = response.data.vocab;
+        const fileName = file.assets[0].name.replace('.docx', '');
+
+        const uid = auth.currentUser?.uid;
+        if (!uid) {
+            throw new Error('User not authenticated.');
+        }
+
+        const vocabsetsRef = collection(db, `users/${uid}/vocabsets`);
+        await addDoc(vocabsetsRef, {
+            title: fileName,
+            vocab: extractedVocab,
+            createdAt: new Date(),
         });
-        
-          // Navigate to LibraryScreen with extracted vocab and file name
-          navigation.navigate('Library', {
-            screen: 'LibraryMain', // Parent and nested screen names
-            params: {
-              extractedVocab: response.data.vocab,
-              fileName: file.assets[0].name.replace('.docx', ''),
-              frontContent: 'Character',
-              backContent: 'Definition',
-            },
-          });
+
+        setVocabData(extractedVocab);
     } catch (e: any) {
         console.error('Error uploading file:', e);
         setError(e.message || 'An error occurred during the upload.');

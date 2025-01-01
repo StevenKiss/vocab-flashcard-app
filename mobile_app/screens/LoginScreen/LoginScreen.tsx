@@ -51,12 +51,6 @@ const LoginScreen = () => {
                     email,
                 });
 
-                //Create vocabests
-                await setDoc(doc(db, `users/${uid}/vocabsets`, "_metadata"), {
-                    createdAt: new Date(),
-                    description: "Metadata for vocabsets collection",
-                });
-
                 console.log('Account created:', userCredential.user);
             }
         } catch (error) {

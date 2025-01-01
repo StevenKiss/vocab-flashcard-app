@@ -1,7 +1,9 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useCallback} from 'react';
 import { View, Text, TouchableOpacity, FlatList } from 'react-native';
 import { useNavigation, useRoute, RouteProp, useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { auth, db } from '../../firebase/firebaseConfig';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { RootStackParamList } from '../../types/types';
 import styles from './LibraryScreen.styles';
 
@@ -10,25 +12,35 @@ type LibraryRouteProp = RouteProp<RootStackParamList, 'LibraryMain'>;
 const LibraryScreen = () => {
   const [flashcardSets, setFlashcardSets] = useState<any[]>([]); // 0 flashcard sets to start
   const navigation = useNavigation();
-  const route = useRoute();
 
-  useEffect(()=> {
-    // Check if new vocabulary data is passed from Add Screen
-    if (route.params?.extractedVocab && route.params?.fileName) {
-      console.log('Received in LibraryMain:', route.params.fileName);
+  const fetchFlashcardSets = async () => {
+    try {
+      const uid = auth.currentUser?.uid;
+      if (!uid) {
+        throw new Error('User not authenticated.');
+      }
 
-      const newSet = {
-        id: Date.now().toString(),          // Generate a unique ID
-        title: route.params.fileName,       // Use file name as title
-        description: '',                    // Blank description
-        vocab: route.params.extractedVocab, // Vocab Data
-        frontContent: 'Character',          // Default front content
-        backContent: 'Definition',          // Default front content
-      };
+      const vocabsetsRef = collection(db, `users/${uid}/vocabsets`);
+      const vocabsetsQuery = query(vocabsetsRef, orderBy('createdAt', 'desc'));
+      const querySnapshot = await getDocs(vocabsetsQuery);
 
-      setFlashcardSets((prevSets) => [...prevSets, newSet]);
+      const fetchedSets = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      setFlashcardSets(fetchedSets);
+    } catch (error) {
+      console.error('Error fetching vocab sets:', error);
     }
-  }, [route.params?.extractedVocab, route.params?.fileName])
+  };
+
+  // Re-fetch vocab whenever screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      fetchFlashcardSets();
+    }, [])
+  );
 
   // Render each flashcard set as a button
   const renderFlashcardSet = ({item}: {item: {id: string; title: string; description: string; vocab: any[]}}) => {

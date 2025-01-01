@@ -87,7 +87,7 @@ const ProfileScreen = () => {
     try {
       const credential = EmailAuthProvider.credential(auth.currentUser?.email, password);
       await reauthenticateWithCredential(auth.currentUser, credential);
-      
+
       // Account Deletion
       await deleteUserData();
       await deleteUser(auth.currentUser);
