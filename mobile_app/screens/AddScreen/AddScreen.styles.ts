@@ -46,19 +46,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
         marginBottom: 5,
     },
-    saveButton: {
-        backgroundColor: '#6F4E7C',
-        paddingVertical: 12,
-        paddingHorizontal: 20,
-        borderRadius: 10,
-        marginTop: 20,
-        alignItems: 'center',
-    },
-    saveButtonText: {
-        color: '#FFFFFF',
-        fontSize: 16,
-        fontWeight: '600',
-    },
     textInput: {
         borderWidth: 1,
         borderColor: '#D3D3D3',
@@ -68,7 +55,44 @@ const styles = StyleSheet.create({
         fontSize: 16,
         backgroundColor: '#FFF',
         color: '#6F4E7C',
-    }
+    },
+    buttonRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 20,
+    },
+    cancelButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#E63946',
+        borderRadius: 10,
+        paddingVertical: 10,
+        paddingHorizontal: 40,
+        flex: 1,
+        marginEnd: 10,
+    },
+    cancelButtonText: {
+        color: '#FFF',
+        fontSize: 16,
+        fontWeight: '600',
+        marginLeft: 5,
+    },
+    saveButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#2A9D8F',
+        paddingVertical: 10,
+        paddingHorizontal: 40,
+        borderRadius: 10,
+        flex: 1,
+        marginStart: 10,
+    },
+    saveButtonText: {
+        color: '#FFF',
+        fontSize: 16,
+        fontWeight: '600',
+        marginLeft: 5,
+    },
 });
 
 export default styles;

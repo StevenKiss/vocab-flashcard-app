@@ -15,6 +15,8 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../types/types';
 import { auth, db } from '../../firebase/firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
+import Icon from 'react-native-vector-icons/MaterialIcons'
+
 import styles from './AddScreen.styles';
 
 type AddScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Add'>;
@@ -109,6 +111,13 @@ const AddScreen = () => {
         navigation.navigate('Library');
     };
 
+    // Cancel current upload
+    const cancelCreation = () => {
+        setVocabData([]);
+        setFileName('');
+        setError('');
+    };
+
     return (
         <View style={styles.container}>
             <Text style={styles.header}>Upload a DOCX to Generate Flashcards</Text>
@@ -126,11 +135,9 @@ const AddScreen = () => {
                     {/* Text Input to edit the flashcard set title */}
                     <Text style={styles.resultsHeader}>Title:</Text>
                     <TextInput
-                        label="Flashcard Set Title"
                         value={fileName}
                         onChangeText={setFileName}
                         style={styles.textInput}
-                        mode="outlined"
                     />
 
                     {/* Scroll view for extracted vocab */}
@@ -144,9 +151,17 @@ const AddScreen = () => {
                     </ScrollView>
 
                     {/* Button to save flashcards */}
-                    <TouchableOpacity style={styles.saveButton} onPress={saveToLibrary}>
-                        <Text style={styles.saveButtonText}>Create Flashcard Set</Text>
-                    </TouchableOpacity>
+                    <View style={styles.buttonRow}>
+                        <TouchableOpacity style={styles.cancelButton} onPress={cancelCreation}>
+                            <Icon name="cancel" size={20} color="#FFF" />
+                            <Text style={styles.cancelButtonText}>Cancel</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={styles.saveButton} onPress={saveToLibrary}>
+                            <Icon name="check" size={20} color="#FFF" />
+                            <Text style={styles.saveButtonText}>Save</Text>
+                        </TouchableOpacity>
+                    </View>
                 </>
             )}
         </View>

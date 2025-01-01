@@ -6,12 +6,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import styles from './FlashcardScreen.styles';
 import Icon from 'react-native-vector-icons/MaterialIcons'
-import { addFlashcard, getAllFlashcards } from '../../firebase/firestore';
 
 const FlashcardScreen = () => {
     const route = useRoute();
     const navigation = useNavigation();
-    const {vocab} = route.params; // Vocab taken from LibraryScreen
+    //const {vocab} = route.params; // Vocab taken from LibraryScreen
 
     const [knownWords, setKnownWords] = useState([]);               // Set known words to empty
     const [unknownWords, setUnknownWords] = useState([]);           // Set unknown words to empty
@@ -30,30 +29,6 @@ const FlashcardScreen = () => {
     const flipAnim = useRef(new Animated.Value(0)).current; // Animation for flipping card
     const isFlippingRef = useRef(false); // Flipping Reference
     const swiperRef = useRef(null); // Swiper Reference
-
-    // // Add Flashcards to Firestore
-    // const saveFlashcardsToDatabase = async() => {
-    //     try {
-    //         if (!vocab || vocab.length === 0) {
-    //             Alert.alert('No Vocab', 'No vocab data to save');
-    //             return;
-    //         }
-
-    //         // Loop through vocab array and save each flashcard
-    //         for (const word of vocab) {
-    //             await addFlashcard({
-    //                 character: word.character || 'No character',
-    //                 pinyin: word.pinyin || 'No pinyin',
-    //                 definition: word.definition || 'No definition',
-    //             });
-    //         }
-
-    //         Alert.alert('Success', 'Flashcards added successfully!');
-    //     } catch(error) {
-    //         console.error('Error adding flashcards:', error);
-    //         Alert.alert('Error', 'Failed to save flashcards to the databse.');
-    //     }
-    // };
 
     // When user changes flashcard content in settings
     useEffect(() => {
