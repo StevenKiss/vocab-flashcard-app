@@ -59,6 +59,16 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
     },
+    textInput: {
+        borderWidth: 1,
+        borderColor: '#D3D3D3',
+        borderRadius: 10,
+        padding: 12,
+        marginBottom: 20,
+        fontSize: 16,
+        backgroundColor: '#FFF',
+        color: '#6F4E7C',
+    }
 });
 
 export default styles;

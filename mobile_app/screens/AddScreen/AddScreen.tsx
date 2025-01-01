@@ -6,6 +6,7 @@ import {
     TouchableOpacity,
     ActivityIndicator,
     ScrollView,
+    TextInput,
 } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker'; // For picking a file
 import axios from 'axios'; // Necessary to send request to the Flask API
@@ -19,57 +20,76 @@ import styles from './AddScreen.styles';
 type AddScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Add'>;
 
 const AddScreen = () => {
-  const [loading, setLoading] = useState(false); // While calling API shows a spinner
-  const [vocabData, setVocabData]= useState([]); // For storing vocabulary data
-  const [error, setError] = useState(''); // For storing error messages
-  const navigation = useNavigation<AddScreenNavigationProp>();
+    const [loading, setLoading] = useState(false); // While calling API shows a spinner
+    const [vocabData, setVocabData]= useState([]); // For storing vocabulary data
+    const [fileName, setFileName] = useState(''); // For storing file name
 
-  // Handle File Selection
-  const pickDocument = async () => {
-    setError(''); // Clears the exisitng errors
-    try {
-        const result = await DocumentPicker.getDocumentAsync({
-            type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // Restrict to .docx
-        });
+    const [error, setError] = useState(''); // For storing error messages
 
-        if (result.canceled) {
-            console.log('File selection canceled');
+
+    const navigation = useNavigation<AddScreenNavigationProp>();
+
+    // Handle File Selection
+    const pickDocument = async () => {
+        setError(''); // Clears the exisitng errors
+        try {
+            const result = await DocumentPicker.getDocumentAsync({
+                type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // Restrict to .docx
+            });
+
+            if (result.canceled) {
+                console.log('File selection canceled');
+                return;
+            }
+
+            uploadFile(result);
+        } catch (e) {
+            console.error('Error picking document:', e);
+            setError('Could not pick a file. Please try again');
+        }
+    };
+
+    // Process to upload the selected file to Flask API
+    const uploadFile = async (file: any) => {
+        setLoading(true); // loading spinner
+        const formData = new FormData();
+
+
+        // Append file to formData
+        formData.append('file', {
+            uri: file.assets[0].uri,
+            name: file.assets[0].name || 'badname_file.docx',
+            type: file.assets[0].mimeType,
+        } as any);
+
+        // Logging the formData for debug purposes
+        console.log('File to upload:', file);
+        console.log('FormData:', formData);
+        try{
+            // Sending the POST request to the Flask server
+            const response = await axios.post("http://10.0.0.72:5000/upload", formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            // Save extracted data
+            setVocabData(response.data.vocab);
+            setFileName(file.assets[0].name.replace('.docx', ''));
+        } catch (e: any) {
+            console.error('Error uploading file:', e);
+            setError(e.message || 'An error occurred during the upload.');
+        } finally {
+            setLoading(false); // Hide the loading spinner
+        }
+    };
+
+    // Handle Save to Library
+    const saveToLibrary = async () => {
+        if (vocabData.length === 0) {
+            setError('No vocabulary data to save');
             return;
         }
-
-        uploadFile(result);
-    } catch (e) {
-        console.error('Error picking document:', e);
-        setError('Could not pick a file. Please try again');
-    }
-  };
-
-  // Process to upload the selected file to Flask API
-  const uploadFile = async (file: any) => {
-    setLoading(true); // loading spinner
-    const formData = new FormData();
-
-
-    // Append file to formData
-    formData.append('file', {
-        uri: file.assets[0].uri,
-        name: file.assets[0].name || 'badname_file.docx',
-        type: file.assets[0].mimeType,
-    } as any);
-
-    // Logging the formData for debug purposes
-    console.log('File to upload:', file);
-    console.log('FormData:', formData);
-    try{
-        // Sending the POST request to the Flask server
-        const response = await axios.post("http://10.0.0.72:5000/upload", formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
-
-        const extractedVocab = response.data.vocab;
-        const fileName = file.assets[0].name.replace('.docx', '');
 
         const uid = auth.currentUser?.uid;
         if (!uid) {
@@ -79,60 +99,58 @@ const AddScreen = () => {
         const vocabsetsRef = collection(db, `users/${uid}/vocabsets`);
         await addDoc(vocabsetsRef, {
             title: fileName,
-            vocab: extractedVocab,
+            vocab: vocabData,
             createdAt: new Date(),
         });
 
-        setVocabData(extractedVocab);
-    } catch (e: any) {
-        console.error('Error uploading file:', e);
-        setError(e.message || 'An error occurred during the upload.');
-    } finally {
-        setLoading(false); // Hide the loading spinner
-    }
-  };
+        setVocabData([]);
+        setFileName('');
+        // Navigate to Library Screen with vocab data
+        navigation.navigate('Library');
+    };
 
-  // Handle Save to Library
-  const saveToLibrary = () => {
-    if (vocabData.length === 0) {
-        setError('No vocabulary data to save');
-        return;
-    }
+    return (
+        <View style={styles.container}>
+            <Text style={styles.header}>Upload a DOCX to Generate Flashcards</Text>
 
-    // Navigate to Library Screen with vocab data
-    navigation.navigate('Library', {extractedVocab: vocabData});
-  };
-
-  return (
-    <View style={styles.container}>
-        <Text style={styles.header}>Upload a DOCX to Generate Flashcards</Text>
-
-        <TouchableOpacity style={styles.button} onPress={pickDocument}>
-            <Text style={styles.buttonText}>Choose DOCX</Text>
-        </TouchableOpacity>
-
-        {loading && <ActivityIndicator size="large" color="#6F4E7C"/>}
-
-        {error ? <Text style={styles.error}>{error}</Text> : null}
-
-        {vocabData.length > 0 && (
-            <ScrollView style={styles.resultsContainer}>
-                <Text style={styles.resultsHeader}>Extracted Vocabulary:</Text>
-                {vocabData.map((item, index) => (
-                    <Text key={index} style={styles.vocabItem}>
-                        {item.Character} ({item.Pinyin}): {item.Definition}
-                    </Text>
-                ))}
-            </ScrollView>
-        )}
-
-        {vocabData.length > 0 && (
-            <TouchableOpacity style={styles.saveButton} onPress={saveToLibrary}>
-                <Text style={styles.saveButtonText}>Save to Library</Text>
+            <TouchableOpacity style={styles.button} onPress={pickDocument}>
+                <Text style={styles.buttonText}>Choose DOCX</Text>
             </TouchableOpacity>
-        )}
-    </View>
-  );
+
+            {loading && <ActivityIndicator size="large" color="#6F4E7C"/>}
+
+            {error ? <Text style={styles.error}>{error}</Text> : null}
+
+            {vocabData.length > 0 && (
+                <>
+                    {/* Text Input to edit the flashcard set title */}
+                    <Text style={styles.resultsHeader}>Title:</Text>
+                    <TextInput
+                        label="Flashcard Set Title"
+                        value={fileName}
+                        onChangeText={setFileName}
+                        style={styles.textInput}
+                        mode="outlined"
+                    />
+
+                    {/* Scroll view for extracted vocab */}
+                    <ScrollView style={styles.resultsContainer}>
+                        <Text style={styles.resultsHeader}>Extracted Vocabulary:</Text>
+                        {vocabData.map((item, index) => (
+                            <Text key={index} style={styles.vocabItem}>
+                                {item.Character} ({item.Pinyin}): {item.Definition}
+                            </Text>
+                        ))}
+                    </ScrollView>
+
+                    {/* Button to save flashcards */}
+                    <TouchableOpacity style={styles.saveButton} onPress={saveToLibrary}>
+                        <Text style={styles.saveButtonText}>Create Flashcard Set</Text>
+                    </TouchableOpacity>
+                </>
+            )}
+        </View>
+    );
 };
 
 export default AddScreen;
