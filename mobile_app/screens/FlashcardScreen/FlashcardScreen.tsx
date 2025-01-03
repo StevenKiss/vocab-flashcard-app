@@ -10,7 +10,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons'
 const FlashcardScreen = () => {
     const route = useRoute();
     const navigation = useNavigation();
-    //const {vocab} = route.params; // Vocab taken from LibraryScreen
+    const {vocab} = route.params; // Vocab taken from LibraryScreen
 
     const [knownWords, setKnownWords] = useState([]);               // Set known words to empty
     const [unknownWords, setUnknownWords] = useState([]);           // Set unknown words to empty
