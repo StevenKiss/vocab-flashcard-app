@@ -1,7 +1,86 @@
 import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
-    container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+    container: {
+        flex: 1,
+        backgroundColor: '#EFE7EC',
+    },
+    safeArea: {
+        flex: 1,
+        backgroundColor: '#EFE7EC',
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        color: '#6F4E7C',
+        marginBottom: 10,
+    },
+    grid: {
+        paddingHorizontal: 10,
+        justifyContent: 'center',
+    },
+    characterBox: {
+        backgroundColor: '#FFF',
+        marign: 5,
+        borderRadius: 8,
+        padding: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 60,
+        height: 60,
+    },
+    characterText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#6F4E7C',
+    },
+    modalContainer: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContent: {
+        backgroundColor: '#FFFFFF',
+        padding: 20,
+        borderRadius: 10,
+        width: '80%',
+        alignItems: 'center',
+    },
+    modalTitle: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 10,
+        color: '#6F4E7C',
+    },
+    modalDefinition: {
+        fontSize: 16,
+        marginBottom: 10,
+        textAlign: 'center',
+    },
+    modalPhrase: {
+        fontSize: 16,
+        marginBottom: 10,
+        textAlign: 'center',
+    },
+    modalSets: {
+        fontSize: 14,
+        marginBottom: 10,
+        textAlign: 'center',
+        color: '#6F4E7C',
+    },
+    closeButton: {
+        backgroundColor: '#E63946',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 8,
+    },
+    closeButtonText: {
+        color: '#FFF',
+        fontSize: 16,
+        fontWeight: '600',
+    },
 });
 
 export default styles;

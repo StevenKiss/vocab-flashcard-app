@@ -130,7 +130,9 @@ const LibraryScreen = () => {
           translucent
         />
       <View style={styles.header}>
-        <Text style={styles.headerText}>Flashcard Sets</Text>
+        <View style={styles.headerTextContainer}> 
+          <Text style={styles.headerText}>Flashcard Sets</Text>
+        </View>
         <TouchableOpacity onPress={toggleEditMode}>
           <Text style={styles.editButtonText}>{isEditMode ? 'Done' : 'Edit'}</Text>
         </TouchableOpacity>

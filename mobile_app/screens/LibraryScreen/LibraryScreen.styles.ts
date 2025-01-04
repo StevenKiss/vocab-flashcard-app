@@ -7,17 +7,19 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 10,
     paddingHorizontal: 20,
+  },
+  headerTextContainer: {
+    flex: 1,
+    alignItems: 'center',
   },
   headerText: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#6F4E7C',
     textAlign: 'center',
-    flex: 1,
   },
   editButtonText: {
     color: '#6F4E7C',
