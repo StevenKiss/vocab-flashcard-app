@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   View,
   Text,
@@ -7,8 +7,9 @@ import {
   Modal,
   StatusBar,
 } from 'react-native';
-import { collection, getDocs, onSnapshot } from 'firebase/firestore';
-import { db } from '../../firebase/firebaseConfig';
+import { useFocusEffect } from '@react-navigation/native';
+import { collection, getDocs } from 'firebase/firestore';
+import { db, auth } from '../../firebase/firebaseConfig';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import styles from './CharactersScreen.styles';
 
@@ -17,19 +18,35 @@ const CharactersScreen = () => {
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
-  /*
-  useEffect(() => {
-    // Fetch and listen for updates in the 'characters' collection
-    const unsubscribe = onSnapshot(collection(db, 'characters'), (snapshot) => {
-      const charactersData = [];
-      snapshot.forEach((doc) => {
-        charactersData.push({ id: doc.id, ...doc.data() });
-      });
-      setCharacters(charactersData);
-    });
-    return () => unsubscribe();
-  }, []); */
+  
+  const fetchCharacters = async () => {
+    try {
+      const uid = auth.currentUser?.uid;
+      if (!uid) {
+        throw new Error('User not authenticated.');
+      }
+      
+      // Fetch all files under CharacterAndVocabData
+      const collectionRef = collection(db, `users/${uid}/CharacterAndVocabData`);
+      const filesSnapshot = await getDocs(collectionRef);
 
+      // Iterate over files to get characters
+      const charactersData = [];
+      filesSnapshot.docs.forEach((fileDoc) => {
+        const fileData = fileDoc.data();
+
+        if (fileData.characters && Array.isArray(fileData.characters)) {
+          fileData.characters.forEach((character) => 
+            charactersData.push({ id: character.id, ...character})
+          );
+        }
+      })
+      console.log('Fetched characters:', charactersData); // Debugging log
+      setCharacters(charactersData);
+    } catch (error) {
+      console.error('Error fetching characters:', error);
+    }
+  };
   // Handles character press
   const handleCharacterPress = (character) => {
     setSelectedCharacter(character);
@@ -43,6 +60,13 @@ const CharactersScreen = () => {
     >
       <Text style={styles.characterText}>{item.character}</Text>
     </TouchableOpacity>
+  );
+
+  // Re-fetch vocab whenever screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      fetchCharacters();
+    }, [])
   );
 
   return (
