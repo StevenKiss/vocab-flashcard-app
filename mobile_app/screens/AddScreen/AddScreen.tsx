@@ -14,7 +14,7 @@ import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../types/types';
 import { auth, db } from '../../firebase/firebaseConfig';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, setDoc } from 'firebase/firestore';
 import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import styles from './AddScreen.styles';
@@ -23,11 +23,10 @@ type AddScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Add'>;
 
 const AddScreen = () => {
     const [loading, setLoading] = useState(false); // While calling API shows a spinner
-    const [vocabData, setVocabData]= useState([]); // For storing vocabulary data
+    const [vocabData, setVocabData] = useState([]); // For storing vocabulary data
+    const [characterData, setCharacterData] = useState([]); // For storing invidual characters
     const [fileName, setFileName] = useState(''); // For storing file name
-
     const [error, setError] = useState(''); // For storing error messages
-
 
     const navigation = useNavigation<AddScreenNavigationProp>();
 
@@ -77,6 +76,7 @@ const AddScreen = () => {
 
             // Save extracted data
             setVocabData(response.data.vocab);
+            setCharacterData(response.data.characters);
             setFileName(file.assets[0].name.replace('.docx', ''));
         } catch (e: any) {
             console.error('Error uploading file:', e);
@@ -88,28 +88,44 @@ const AddScreen = () => {
 
     // Handle Save to Library
     const saveToLibrary = async () => {
-        if (vocabData.length === 0) {
-            setError('No vocabulary data to save');
+        console.log("Saving...");
+        if (vocabData.length === 0 && characterData.length === 0) {
+            setError('No vocabulary or character data to save');
             return;
         }
-
+    
         const uid = auth.currentUser?.uid;
         if (!uid) {
+            console.error('User not authenticated.');
             throw new Error('User not authenticated.');
         }
-        console.log(vocabData);
-
-        const vocabsetsRef = collection(db, `users/${uid}/vocabsets`);
-        await addDoc(vocabsetsRef, {
-            title: fileName,
-            vocab: vocabData,
-            createdAt: new Date(),
-        });
-
-        setVocabData([]);
-        setFileName('');
-        // Navigate to Library Screen with vocab data
-        navigation.navigate('Library');
+    
+        try {
+            // Reference to the document for this file in CharacterAndVocabData
+            const fileDocRef = doc(db, `users/${uid}/CharacterAndVocabData/${fileName}`);
+    
+            // Set the metadata and data in one call
+            await setDoc(fileDocRef, {
+                title: fileName,
+                createdAt: new Date(),
+                vocab: vocabData, // Store vocab as an array
+                characters: characterData, // Store characters as an array
+            });
+    
+            console.log(`Data saved to: users/${uid}/CharacterAndVocabData/${fileName}`);
+    
+            // Reset states
+            setVocabData([]);
+            setCharacterData([]);
+            setFileName('');
+            setError('');
+    
+            // Navigate to Library Screen with vocab data
+            navigation.navigate('Library');
+        } catch (error) {
+            console.error('Error saving to library:', error);
+            setError('Error saving data. Please try again.');
+        }
     };
 
     // Cancel current upload

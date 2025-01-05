@@ -20,13 +20,14 @@ const LibraryScreen = () => {
         throw new Error('User not authenticated.');
       }
 
-      const vocabsetsRef = collection(db, `users/${uid}/vocabsets`);
-      const vocabsetsQuery = query(vocabsetsRef, orderBy('createdAt', 'desc'));
-      const querySnapshot = await getDocs(vocabsetsQuery);
+      // Reference to the CharacterAndVocabData collection
+      const collectionRef = collection(db, `users/${uid}/CharacterAndVocabData`);
+      const querySnapshot = await getDocs(collectionRef);
 
-      const fetchedSets = querySnapshot.docs.map(doc => ({
+      // Map over docs to extract data
+      const fetchedSets = querySnapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data(),
+        ...doc.data(), 
       }));
 
       setFlashcardSets(fetchedSets);
@@ -99,8 +100,8 @@ const LibraryScreen = () => {
         } else {
           navigation.navigate('FlashcardScreen', {
             setId: item.id,
-            vocab: item.vocab,
             title: item.title,
+            vocab: item.vocab,
             frontContent: item.frontContent,
             backContent: item.backContent,
           });
