@@ -75,13 +75,15 @@ const CharactersScreen = () => {
                   Definition: {selectedCharacter.definition}
                 </Text>
               )}
-              {selectedCharacter?.phrase && (
-                <Text style={styles.modalPhrase}>
-                  Phrase: {selectedCharacter.phrase.replace(
-                    selectedCharacter.character,
-                    `[${selectedCharacter}]`
+              {selectedCharacter?.phrases?.length > 0 && (
+                <>
+                  <Text style={styles.modalPhraseHeader}>Phrases:</Text>
+                  {selectedCharacter.phrases.map((phrase, index) =>
+                    <Text key={index} style={styles.modalPhrase}>
+                      {phrase.phrase} ({phrase.phrase_pinyin}): {phrase.phrase_definition}
+                    </Text>
                   )}
-                </Text>
+                </>
               )}
               <Text style={styles.modalSets}>
                 Sets: {selectedCharacter?.sets?.join(', ')}

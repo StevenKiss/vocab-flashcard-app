@@ -67,7 +67,7 @@ const AddScreen = () => {
         // Logging the formData for debug purposes
         console.log('File to upload:', file);
         console.log('FormData:', formData);
-        try{
+        try {
             // Sending the POST request to the Flask server
             const response = await axios.post("http://10.0.0.72:5000/upload", formData, {
                 headers: {
