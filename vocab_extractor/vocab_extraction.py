@@ -14,16 +14,22 @@ def extract_vocab(text):
 
     print(f"This is the cleaned text:\n {cleaned_text}")
     # Use regex to match Chinese characters
-    pattern = r'([\u4e00-\u9fff，]+)，([a-zA-Zāáǎàēéěèōóǒòūúǔùīíǐìüǘǚǜ]+):\s*(.*?)(?=\n[\u4e00-\u9fff，]+|$)'
+    pattern = r'([\u4e00-\u9fff，]+)\s*，\s*([a-zA-Zāáǎàēéěèōóǒòūúǔùīíǐìüǘǚǜ\s]+):\s*(.+?)(?=\n|$)'
+    #pattern = r'([\u4e00-\u9fff，]+)\s*，\s*([a-zA-Zāáǎàēéěèōóǒòūúǔùīíǐìüǘǚǜ\s]+):\s*(.+?)(?=\n[\u4e00-\u9fff，]+，|$)'
+    #pattern = r'([\u4e00-\u9fff，]+)，([a-zA-Zāáǎàēéěèōóǒòūúǔùīíǐìüǘǚǜ\s]+):\s*(.*?)(?=\n[\u4e00-\u9fff，]+，|$)'
+    #pattern = r'([\u4e00-\u9fff，]+)，([a-zA-Zāáǎàēéěèōóǒòūúǔùīíǐìüǘǚǜ\s]+):\s*(.+?)(?=\n[\u4e00-\u9fff，]+，|$)'
+    #pattern = r'([\u4e00-\u9fff，]+)，([a-zA-Zāáǎàēéěèōóǒòūúǔùīíǐìüǘǚǜ\s]+):\s*(.*)'
+    #pattern = r'([\u4e00-\u9fff，]+)，([a-zA-Zāáǎàēéěèōóǒòūúǔùīíǐìüǘǚǜ\s]+):\s*(.*?)(?=\n[\u4e00-\u9fff，]+|$)'
+    #pattern = r'([\u4e00-\u9fff，]+)，([a-zA-Zāáǎàēéěèōóǒòūúǔùīíǐìüǘǚǜ]+):\s*(.*?)(?=\n[\u4e00-\u9fff，]+|$)'
     #pattern = r'([\u4e00-\u9fff，]+)，([a-zA-Zāáǎàēéěèōóǒòūúǔùīíǐìüǘǚǜ]+):\s*(.*?)(?=\n[\u4e00-\u9fff]+，|$)'
-    matches = re.findall(pattern, text)
+    matches = re.findall(pattern, cleaned_text)
 
     # Create dictionaries to organize results
     vocab_list = []
     for match in matches:
         character = match[0].strip(", ")
-        pinyin = match[1]
-        definition = match[2]
+        pinyin = match[1].strip()
+        definition = match[2].strip()
         vocab_list.append({"Character": character, "Pinyin": pinyin, "Definition": definition})
     print(vocab_list)
     return vocab_list

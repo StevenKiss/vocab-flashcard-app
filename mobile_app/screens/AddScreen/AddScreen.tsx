@@ -97,6 +97,7 @@ const AddScreen = () => {
         if (!uid) {
             throw new Error('User not authenticated.');
         }
+        console.log(vocabData);
 
         const vocabsetsRef = collection(db, `users/${uid}/vocabsets`);
         await addDoc(vocabsetsRef, {
