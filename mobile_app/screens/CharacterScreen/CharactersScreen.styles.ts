@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     },
     characterBox: {
         backgroundColor: '#FFF',
-        marign: 5,
+        margin: 5,
         borderRadius: 8,
         padding: 20,
         justifyContent: 'center',
@@ -53,6 +53,11 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 10,
         color: '#6F4E7C',
+    },
+    modalPingyin: {
+        fontSize: 18,
+        color: "#333",
+        marginBottom: 5,
     },
     modalDefinition: {
         fontSize: 16,

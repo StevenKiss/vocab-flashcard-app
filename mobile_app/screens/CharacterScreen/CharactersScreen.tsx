@@ -65,6 +65,11 @@ const CharactersScreen = () => {
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>{selectedCharacter?.character}</Text>
+              {selectedCharacter?.pinyin && (
+                <Text style={styles.modalPinyin}>
+                  Pinyin: {selectedCharacter.pinyin}
+                </Text>
+              )}
               {selectedCharacter?.definition && (
                 <Text style={styles.modalDefinition}>
                   Definition: {selectedCharacter.definition}
