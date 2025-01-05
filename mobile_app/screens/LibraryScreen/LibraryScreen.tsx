@@ -74,7 +74,7 @@ const LibraryScreen = () => {
       }
 
       for (const setId of selectedSets) {
-        const setRef = doc(db, `users/${uid}/vocabsets/${setId}`);
+        const setRef = doc(db, `users/${uid}/CharacterAndVocabData/${setId}`);
         await deleteDoc(setRef);
       }
 
