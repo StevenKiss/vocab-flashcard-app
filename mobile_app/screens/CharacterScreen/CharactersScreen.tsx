@@ -1,8 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import {
   View,
-  Text,
-  FlatList, 
+  Text, 
   TouchableOpacity,
   Modal,
   StatusBar,
@@ -11,10 +10,11 @@ import { useFocusEffect } from '@react-navigation/native';
 import { collection, getDocs } from 'firebase/firestore';
 import { db, auth } from '../../firebase/firebaseConfig';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { SectionGrid } from 'react-native-super-grid';
 import styles from './CharactersScreen.styles';
 
 const CharactersScreen = () => {
-  const [characters, setCharacters] = useState([]);
+  const [sections, setSections] = useState([]);
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -30,19 +30,20 @@ const CharactersScreen = () => {
       const collectionRef = collection(db, `users/${uid}/CharacterAndVocabData`);
       const filesSnapshot = await getDocs(collectionRef);
 
-      // Iterate over files to get characters
-      const charactersData = [];
+      // Group characters by title
+      const groupedSections = [];
       filesSnapshot.docs.forEach((fileDoc) => {
         const fileData = fileDoc.data();
 
         if (fileData.characters && Array.isArray(fileData.characters)) {
-          fileData.characters.forEach((character) => 
-            charactersData.push({ id: character.id, ...character})
-          );
+          groupedSections.push({
+            title: fileDoc.id,
+            data: fileData.characters,
+          });
         }
-      })
-      console.log('Fetched characters:', charactersData); // Debugging log
-      setCharacters(charactersData);
+      });
+      console.log('Grouped Sections:', groupedSections); // Debugging log
+      setSections(groupedSections);
     } catch (error) {
       console.error('Error fetching characters:', error);
     }
@@ -62,6 +63,12 @@ const CharactersScreen = () => {
     </TouchableOpacity>
   );
 
+  const renderSectionHeader = ({ section: { title } }) => (
+    <View style={styles.sectionHeader}>
+      <Text style={styles.sectionHeaderText}>{title}</Text>
+    </View>
+  )
+
   // Re-fetch vocab whenever screen is focused
   useFocusEffect(
     useCallback(() => {
@@ -78,14 +85,25 @@ const CharactersScreen = () => {
           barStyle="dark-content" 
         />
         <Text style={styles.title}>Characters</Text>
-        <FlatList
-          data={characters}
-          renderItem={renderCharacter}
-          keyExtractor={(item) => item.id}
-          numColumns={5}
-          contentContainerStyle={styles.grid}
+        <SectionGrid
+          sections={sections}
+          itemDimension={60}
+          spacing={10}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.characterBox}
+              onPress={() => handleCharacterPress(item)}
+            >
+              <Text style={styles.characterText}>{item.character}</Text>
+            </TouchableOpacity>
+          )}
+          renderSectionHeader={({ section }) => (
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionHeaderText}>{section.title}</Text>
+            </View>
+          )}
         />
-        <Modal visible={modalVisible} transparent={true} animationType="slide">
+        <Modal visible={modalVisible} transparent={true}>
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>{selectedCharacter?.character}</Text>

@@ -16,19 +16,33 @@ const styles = StyleSheet.create({
         color: '#6F4E7C',
         marginBottom: 10,
     },
-    grid: {
-        paddingHorizontal: 10,
-        justifyContent: 'center',
+    sectionHeader: {
+        backgroundColor: '#DDD',
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        borderRadius: 5,
+        marginBottom: 10,
+        alignItems: 'center',
+    },
+    sectionHeaderText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#6F4E7C',
     },
     characterBox: {
         backgroundColor: '#FFF',
         margin: 5,
         borderRadius: 8,
-        padding: 20,
+        padding: 10,
         justifyContent: 'center',
         alignItems: 'center',
         width: 60,
         height: 60,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+        elevation: 2, // For Android shadow
     },
     characterText: {
         fontSize: 18,

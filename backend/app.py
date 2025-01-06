@@ -60,7 +60,7 @@ def upload_file():
         print(f"Vocab List: {vocab_list}\n\n")
 
         # Extract individual characters
-        characters = extract_individual_characters(vocab_list, set_name="Lesson 1")
+        characters = extract_individual_characters(vocab_list, set_name=os.path.splitext(file.filename)[0] )
         print("\n\nCharacter extraction successful")
         print(f"Character Extraction: {characters}")
 

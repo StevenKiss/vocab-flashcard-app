@@ -1,6 +1,6 @@
 import uuid
 
-def extract_individual_characters(vocab_list, set_name="DefaultSet"):
+def extract_individual_characters(vocab_list, set_name="NoSet"):
     """
     Extracts individual characters from compound words and create medtadata.
 
