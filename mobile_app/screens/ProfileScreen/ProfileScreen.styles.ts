@@ -4,8 +4,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#EFE7EC',
-        padding: 20,
-        alignItems: 'center'
+        alignItems: 'center',
+        paddingHorizontal: 20,
     },
     safeArea: {
         flex: 1,
@@ -16,15 +16,12 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         color: '#6F4E7C',
-        marginBottom: 20,
     },
     infoContainer: {
         marginVertical: 20,
         padding: 10,
         backgroundColor: '#FFF',
         borderRadius: 10,
-        width: '90%',
-        alignItems: 'center',
         borderWidth: 1,
         borderColor: '#D3D3D3',
     },

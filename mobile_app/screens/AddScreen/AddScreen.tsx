@@ -12,16 +12,12 @@ import {
 import * as DocumentPicker from 'expo-document-picker'; // For picking a file
 import axios from 'axios'; // Necessary to send request to the Flask API
 import { useNavigation } from '@react-navigation/native'
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../../types/types';
 import { auth, db } from '../../firebase/firebaseConfig';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { collection, addDoc, doc, setDoc } from 'firebase/firestore';
 import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import styles from './AddScreen.styles';
-
-type AddScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Add'>;
 
 const AddScreen = () => {
     const [loading, setLoading] = useState(false); // While calling API shows a spinner
@@ -30,7 +26,7 @@ const AddScreen = () => {
     const [fileName, setFileName] = useState(''); // For storing file name
     const [error, setError] = useState(''); // For storing error messages
 
-    const navigation = useNavigation<AddScreenNavigationProp>();
+    const navigation = useNavigation();
 
     // Handle File Selection
     const pickDocument = async () => {
