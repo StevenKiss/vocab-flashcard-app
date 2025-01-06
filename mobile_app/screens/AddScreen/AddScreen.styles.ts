@@ -3,14 +3,17 @@ import { StyleSheet } from "react-native";
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 20,
+        paddingHorizontal: 20,
+        backgroundColor: '#EFE7EC',
+    },
+    safeArea: {
+        flex: 1,
         backgroundColor: '#EFE7EC',
     },
     header: {
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 20,
-        marginTop: 30,
         textAlign: 'center',
         color: '#6F4E7C',
     },

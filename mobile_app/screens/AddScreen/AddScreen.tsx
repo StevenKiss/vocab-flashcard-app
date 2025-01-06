@@ -7,6 +7,7 @@ import {
     ActivityIndicator,
     ScrollView,
     TextInput,
+    StatusBar,
 } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker'; // For picking a file
 import axios from 'axios'; // Necessary to send request to the Flask API
@@ -14,6 +15,7 @@ import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../types/types';
 import { auth, db } from '../../firebase/firebaseConfig';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { collection, addDoc, doc, setDoc } from 'firebase/firestore';
 import Icon from 'react-native-vector-icons/MaterialIcons'
 
@@ -137,50 +139,57 @@ const AddScreen = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.header}>Upload a DOCX to Generate Flashcards</Text>
+            <SafeAreaView style={styles.safeArea}>
+                <StatusBar
+                    barStyle="dark-content"
+                    backgroundColor="#EFE7EC"
+                    translucent
+                />
+                <Text style={styles.header}>Upload a DOCX to Generate Flashcards</Text>
 
-            <TouchableOpacity style={styles.button} onPress={pickDocument}>
-                <Text style={styles.buttonText}>Choose DOCX</Text>
-            </TouchableOpacity>
+                <TouchableOpacity style={styles.button} onPress={pickDocument}>
+                    <Text style={styles.buttonText}>Choose DOCX</Text>
+                </TouchableOpacity>
 
-            {loading && <ActivityIndicator size="large" color="#6F4E7C"/>}
+                {loading && <ActivityIndicator size="large" color="#6F4E7C"/>}
 
-            {error ? <Text style={styles.error}>{error}</Text> : null}
+                {error ? <Text style={styles.error}>{error}</Text> : null}
 
-            {vocabData.length > 0 && (
-                <>
-                    {/* Text Input to edit the flashcard set title */}
-                    <Text style={styles.resultsHeader}>Title:</Text>
-                    <TextInput
-                        value={fileName}
-                        onChangeText={setFileName}
-                        style={styles.textInput}
-                    />
+                {vocabData.length > 0 && (
+                    <>
+                        {/* Text Input to edit the flashcard set title */}
+                        <Text style={styles.resultsHeader}>Title:</Text>
+                        <TextInput
+                            value={fileName}
+                            onChangeText={setFileName}
+                            style={styles.textInput}
+                        />
 
-                    {/* Scroll view for extracted vocab */}
-                    <ScrollView style={styles.resultsContainer}>
-                        <Text style={styles.resultsHeader}>Extracted Vocabulary:</Text>
-                        {vocabData.map((item, index) => (
-                            <Text key={index} style={styles.vocabItem}>
-                                {item.Character} ({item.Pinyin}): {item.Definition}
-                            </Text>
-                        ))}
-                    </ScrollView>
+                        {/* Scroll view for extracted vocab */}
+                        <ScrollView style={styles.resultsContainer}>
+                            <Text style={styles.resultsHeader}>Extracted Vocabulary:</Text>
+                            {vocabData.map((item, index) => (
+                                <Text key={index} style={styles.vocabItem}>
+                                    {item.Character} ({item.Pinyin}): {item.Definition}
+                                </Text>
+                            ))}
+                        </ScrollView>
 
-                    {/* Button to save flashcards */}
-                    <View style={styles.buttonRow}>
-                        <TouchableOpacity style={styles.cancelButton} onPress={cancelCreation}>
-                            <Icon name="cancel" size={20} color="#FFF" />
-                            <Text style={styles.cancelButtonText}>Cancel</Text>
-                        </TouchableOpacity>
+                        {/* Button to save flashcards */}
+                        <View style={styles.buttonRow}>
+                            <TouchableOpacity style={styles.cancelButton} onPress={cancelCreation}>
+                                <Icon name="cancel" size={20} color="#FFF" />
+                                <Text style={styles.cancelButtonText}>Cancel</Text>
+                            </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.saveButton} onPress={saveToLibrary}>
-                            <Icon name="check" size={20} color="#FFF" />
-                            <Text style={styles.saveButtonText}>Save</Text>
-                        </TouchableOpacity>
-                    </View>
-                </>
-            )}
+                            <TouchableOpacity style={styles.saveButton} onPress={saveToLibrary}>
+                                <Icon name="check" size={20} color="#FFF" />
+                                <Text style={styles.saveButtonText}>Save</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </>
+                )}
+            </SafeAreaView>
         </View>
     );
 };

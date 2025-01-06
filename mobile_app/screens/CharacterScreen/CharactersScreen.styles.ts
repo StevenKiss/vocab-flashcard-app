@@ -100,6 +100,11 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
     },
+    emptyMessage: {
+        textAlign: 'center',
+        color: '#6F4E7C',
+        marginTop: 20,
+    },
 });
 
 export default styles;

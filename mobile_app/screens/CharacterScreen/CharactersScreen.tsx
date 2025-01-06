@@ -85,33 +85,40 @@ const CharactersScreen = () => {
           barStyle="dark-content" 
         />
         <Text style={styles.title}>Characters</Text>
-        <SectionGrid
-          sections={sections}
-          itemDimension={60}
-          spacing={10}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.characterBox}
-              onPress={() => handleCharacterPress(item)}
-            >
-              <Text style={styles.characterText}>{item.character}</Text>
-            </TouchableOpacity>
-          )}
-          renderSectionHeader={({ section }) => (
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionHeaderText}>{section.title}</Text>
-            </View>
-          )}
-        />
+
+        {sections.length === 0 ? (
+          <Text style={styles.emptyMessage}>
+            No characters available. Add a set to get started!
+          </Text>
+        ) : (
+          <SectionGrid
+            sections={sections}
+            itemDimension={60}
+            spacing={10}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.characterBox}
+                onPress={() => handleCharacterPress(item)}
+              >
+                <Text style={styles.characterText}>{item.character}</Text>
+              </TouchableOpacity>
+            )}
+            renderSectionHeader={({ section }) => (
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionHeaderText}>{section.title}</Text>
+              </View>
+            )}
+          />
+        )}
         <Modal visible={modalVisible} transparent={true}>
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>{selectedCharacter?.character}</Text>
               {selectedCharacter?.pinyin && (
                 <Text style={styles.modalPinyin}>
-                  Pinyin: {selectedCharacter.pinyin}
+                  {selectedCharacter.pinyin}
                 </Text>
               )}
+              <Text style={styles.modalTitle}>{selectedCharacter?.character}</Text>
               {selectedCharacter?.definition && (
                 <Text style={styles.modalDefinition}>
                   Definition: {selectedCharacter.definition}
