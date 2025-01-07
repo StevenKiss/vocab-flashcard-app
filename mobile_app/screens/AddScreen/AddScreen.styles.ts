@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
         marginVertical: 10,
     },
     resultsContainer: {
-        marginTop: 20,
+        marginTop: 0,
         flex: 1,
     },
     resultsHeader: {
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
         borderColor: '#D3D3D3',
         borderRadius: 10,
         padding: 12,
-        marginBottom: 20,
+        marginBottom: 10,
         fontSize: 16,
         backgroundColor: '#FFF',
         color: '#6F4E7C',

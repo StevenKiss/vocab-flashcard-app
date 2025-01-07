@@ -44,11 +44,12 @@ def extract_individual_characters(vocab_list, set_name="NoSet"):
                     }
 
                 # Add the compound word as a phrase
-                individual_characters[char]["phrases"].append({
-                    "phrase": word,
-                    "phrase_pinyin": pinyin,
-                    "phrase_definition": definition
-                })
+                if not any(phrase["phrase"] == word for phrase in individual_characters[char]["phrases"]):
+                    individual_characters[char]["phrases"].append({
+                        "phrase": word,
+                        "phrase_pinyin": pinyin,
+                        "phrase_definition": definition
+                    })
 
     # Convert the dictionary to list
     return list(individual_characters.values())
