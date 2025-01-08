@@ -141,10 +141,14 @@ const AddScreen = () => {
                     backgroundColor="#EFE7EC"
                     translucent
                 />
-                <Text style={styles.header}>Upload a DOCX to Generate Flashcards</Text>
+                <Text style={styles.header}>Create a Flashcard Set</Text>
 
                 <TouchableOpacity style={styles.button} onPress={pickDocument}>
-                    <Text style={styles.buttonText}>Choose DOCX</Text>
+                    <Text style={styles.buttonText}>Auto Generate (.docx only)</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('CreateSetScreen')}>
+                    <Text style={styles.buttonText}>Create Set From Scratch</Text>
                 </TouchableOpacity>
 
                 {loading && <ActivityIndicator size="large" color="#6F4E7C"/>}

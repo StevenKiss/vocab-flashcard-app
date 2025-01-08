@@ -19,11 +19,13 @@ import AddScreen from './screens/AddScreen/AddScreen';
 import CharactersScreen from './screens/CharacterScreen/CharactersScreen';
 import ProfileScreen from './screens/ProfileScreen/ProfileScreen';
 import LoginScreen from './screens/LoginScreen/LoginScreen';
+import CreateSetScreen from './screens/CreateSetScreen/CreateSetScreen';
 
 // Navigators
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 const LibraryStack = createStackNavigator();
+const AddStack = createStackNavigator();
 
 // Library Stack
 function LibraryStackScreen() {
@@ -51,6 +53,28 @@ function LibraryStackScreen() {
         options={{ title: 'Flashcard Settings' }}
       />
     </LibraryStack.Navigator>
+  );
+}
+
+// Add Stack
+
+function AddStackScreen() {
+  return (
+    <AddStack.Navigator screenOptions={{headerShown: false}}>
+      {/* Add Screen is default Screen*/}
+      <AddStack.Screen
+        name="AddMain"
+        component={AddScreen}
+        options={{headerShown: false}}
+      />
+
+      {/* CreateSetScreen */}
+      <AddStack.Screen
+        name="CreateSetScreen"
+        component={CreateSetScreen}
+        options={{ title: 'Create New Set'}}
+      />
+    </AddStack.Navigator>
   );
 }
 
@@ -87,7 +111,7 @@ function MainTabs() {
     >
       <Tab.Screen name= "Home" component={HomeScreen} />
       <Tab.Screen name= "Library" component={LibraryStackScreen} />
-      <Tab.Screen name= "Add" component={AddScreen} />
+      <Tab.Screen name= "Add" component={AddStackScreen} />
       <Tab.Screen name= "Characters" component={CharactersScreen} />
       <Tab.Screen name= "Profile" component={ProfileScreen} />
     </Tab.Navigator>
