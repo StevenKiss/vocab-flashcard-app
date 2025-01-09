@@ -24,6 +24,7 @@ const FlashcardScreen = () => {
     const [swipeHistory, setSwipeHistory] = useState([]);           // Track swiped cards
     const [currentIndex, setCurrentIndex] = useState(0);            // Tracks card index
     const [originalDeck, setOriginalDeck] = useState([...vocab]);   // Keeps original deck
+    const [lastShuffleIndex, setLastShuffleIndex] = useState(0);    // Keeps track of the last index when the shuffle button was toggled
 
     const [preShuffleDeck, setPreSuffleDeck] = useState(null);      // Deck state before shuffle
     const [canUndo, setCanUndo] = useState(true);                   // Whether user can undo or not
@@ -146,6 +147,8 @@ const FlashcardScreen = () => {
         setDeckComplete(false);
         setFinished(false);
         setProgress(0);
+        setSwipeHistory([]);
+        setLastShuffleIndex(0);
         resetCardToFront();
         setCanUndo(false);
     };
@@ -160,13 +163,17 @@ const FlashcardScreen = () => {
                 [newDeck[i], newDeck[j]] = [newDeck[j], newDeck[i]];
             }
         }
+
         setCurrentDeck(newDeck);
         setKnownWords([]);
         setUnknownWords([]);
-        setDeckComplete(false);
         setCurrentIndex(0);
+        setDeckComplete(false);
+        setSwipeHistory([]);
+        setLastShuffleIndex(0);
+        setCanUndo(false);
         resetCardToFront();
-        setCanUndo(true);
+        setCanUndo(false);
     }
 
     // Reseting card to front handling
@@ -210,6 +217,7 @@ const FlashcardScreen = () => {
 
         setCurrentDeck(shuffledDeck);
         setCurrentIndex(knownWords.length + unknownWords.length);
+        setCanUndo(false);
         resetCardToFront();
     };
 
@@ -225,12 +233,14 @@ const FlashcardScreen = () => {
             // Combine known, unknown, and remaining cards in original order
             const adjustedDeck = [...knownWords, ...unknownWords, ...remainingCards];
 
+
             // Update states
             setCurrentDeck(adjustedDeck);
             setCurrentIndex(knownWords.length + unknownWords.length);
+            setCanUndo(swipeHistory.length > 0 && currentIndex > lastShuffleIndex);
+
             resetCardToFront();
             setPreSuffleDeck(null);
-            setCanUndo(swipeHistory.length > 0);
         }
     }
 
@@ -242,21 +252,26 @@ const FlashcardScreen = () => {
         } else {
             shuffleDeck();
         }
+        setLastShuffleIndex(currentIndex);
         setIsShuffleOn((prev) => !prev);
     };
 
     // Keep CanUndo up-to-date
     useEffect(() => {
-        setCanUndo(swipeHistory.length > 0 && currentIndex > 0);
-    }, [swipeHistory, currentIndex]);
+        setCanUndo(
+            swipeHistory.length > 0 &&
+            currentIndex > 0 &&
+            currentIndex > lastShuffleIndex
+        );
+    }, [swipeHistory, currentIndex, lastShuffleIndex]);
 
     // Undo logic
     const handleUndo = () => {
-        if (!canUndo || currentIndex === 0) {
+        if (!canUndo || currentIndex === 0 || currentIndex <= lastShuffleIndex) {
             console.log("Cannot undo");
             return;
         }
-        if (swipeHistory.length > 0 && currentIndex > 0) {
+        if (swipeHistory.length > 0 && currentIndex > lastShuffleIndex) {
             console.log("Undo: Before => Index:", currentIndex, "History length:", swipeHistory.length);
 
             const lastSwipe = swipeHistory[swipeHistory.length - 1];
@@ -277,7 +292,7 @@ const FlashcardScreen = () => {
             }
 
             setCurrentIndex((oldIndex) => (oldIndex > 0 ? oldIndex - 1 : 0));
-            setCanUndo(newHistory.length > 0);
+            setCanUndo(newHistory.length > 0 && currentIndex > lastShuffleIndex);
             resetCardToFront();
         } else {
             console.log("No swipes to undo");
