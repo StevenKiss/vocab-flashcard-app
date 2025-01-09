@@ -70,6 +70,31 @@ def upload_file():
     except Exception as e:
         print("Error during extraction:", str(e))
         return jsonify({"error": str(e)}), 500
+
+@app.route("/process_vocab", methods=["POST"])
+def process_vocab():
+    """
+    Process manually added vocabulary sets to extract individual characters.
+    """
+    try:
+        data = request.get_json()
+        vocab_list = data.get("vocab")
+        set_name = data.get("title", "NoSet")
+        if not vocab_list or not isinstance(vocab_list, list):
+            return jsonify({"error": "Invalid vocab list provided"}), 400
+        
+        print("Received vocab list:", vocab_list)
+        print("Before extract\n")
+        # Extract individual characters
+        characters = extract_individual_characters(vocab_list, set_name=set_name)
+        print("After extract")
+        print(characters)
+
+        return jsonify({"characters": characters}), 200
     
+    except Exception as e:
+        print("Error processing vocab set:", str(e))
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port = 5000, debug=True)

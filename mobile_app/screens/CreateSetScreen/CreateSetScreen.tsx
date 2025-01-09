@@ -12,6 +12,7 @@ import { db, auth } from '../../firebase/firebaseConfig';
 import { doc, setDoc } from 'firebase/firestore';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import styles from './CreateSetScreen.styles';
 
@@ -19,15 +20,15 @@ import styles from './CreateSetScreen.styles';
 const CreateSetScreen = () => {
     const [title, setTitle] = useState('');
     const [flashcards, setFlashcards] = useState([
-        { character: '', pinyin: '', definition: ''},
-        { character: '', pinyin: '', definition: ''},
+        { Character: '', Pinyin: '', Definition: ''},
+        { Character: '', Pinyin: '', Definition: ''},
     ]);
 
     const navigation = useNavigation();
     
 
     const addFlashcard = () => {
-        setFlashcards([...flashcards, { character: '', pinyin: '', definition: ''}]);
+        setFlashcards([...flashcards, { Character: '', Pinyin: '', Definition: ''}]);
     }
 
     const deleteFlashcard = (index) => {
@@ -60,27 +61,37 @@ const CreateSetScreen = () => {
         }
 
         try {
-            const setId = title.replace(/s\s+/g, '-').toLowerCase();
             const newSet = {
                 title,
-                createadAt: new Date(),
+                createdAt: new Date(),
                 vocab: flashcards,
-                characters: [],//Need to have it send it to backend and just process the characters Part
+                characters: [],
             };
 
-            // Svae the set to Firestore
-            const docRef = doc(db, `users/${uid}/CharacterAndVocabData/${setId}`);
-            await setDoc(docRef, newSet);
+            // Send vocab to backend for character extraction (remeber to update when on new IP each time)
+            const response = await axios.post("http://10.0.0.72:5000/process_vocab", newSet)
 
-            // Reset CreateSetScreen state
-            setTitle('');
-            setFlashcards([
-                { character: '', pinyin: '', definition: '' },
-                { character: '', pinyin: '', definition: '' },
-            ]);
+            if (response.status === 200 && response.data.characters) {
+                newSet.characters = response.data.characters;
 
-            Alert.alert('Success', 'Set created successfully!');
-            navigation.navigate('Library', { screen: 'LibraryMain' });
+                // Save the set to Firestore
+                const setId = title.replace(/\s+/g, '-').toLowerCase();
+                const docRef = doc(db, `users/${uid}/CharacterAndVocabData/${setId}`);
+                await setDoc(docRef, newSet);
+
+                Alert.alert('Success', 'Set created successfully!');
+                
+                // Reset CreateSetScreen state
+                setTitle('');
+                setFlashcards([
+                    { Character: '', Pinyin: '', Definition: '' },
+                    { Character: '', Pinyin: '', Definition: '' },
+                ]);
+
+                navigation.navigate('Library', { screen: 'LibraryMain' });
+            } else {
+                throw new Error('Failed to extract characters');
+            }
         } catch (error) {
             console.error('Error saving set:', error);
             Alert.alert('Error', 'Failed to save the set. Please try again.');
@@ -121,23 +132,23 @@ const CreateSetScreen = () => {
                             <TextInput
                                 style={styles.input}
                                 placeholder="Character(s)"
-                                value={card.character}
+                                value={card.Character}
                                 onChangeText={(text) =>
                                     setFlashcards((prev) => {
                                         const updated = [...prev];
-                                        updated[index].character = text;
+                                        updated[index].Character = text;
                                         return updated;
                                     })
                                 }
                                 // Makes sure that only chinese characters are allowed as an input
                                 onEndEditing={() => {
                                     const chineseRegex = /^[\u4e00-\u9fa5]+$/; // Strictly Chinese characters
-                                    const currentCharacter = flashcards[index].character;
-                                    if (!chineseRegex.test(currentCharacter)) {
+                                    const currentCharacter = flashcards[index].Character;
+                                    if (currentCharacter !== '' && !chineseRegex.test(currentCharacter)) {
                                         Alert.alert('Invalid Input', 'Please ensure only Chinese characters are entered.');
                                         setFlashcards((prev) => {
                                             const updated = [...prev];
-                                            updated[index].character = ''; // Clear invalid input
+                                            updated[index].Character = ''; // Clear invalid input
                                             return updated;
                                         });
                                     }
@@ -147,11 +158,11 @@ const CreateSetScreen = () => {
                             <TextInput
                                 style={styles.input}
                                 placeholder="Pinyin"
-                                value={card.pinyin}
+                                value={card.Pinyin}
                                 onChangeText={(text) =>
                                     setFlashcards((prev) => {
                                         const updated = [...prev];
-                                        updated[index].pinyin = text;
+                                        updated[index].Pinyin = text;
                                         return updated;
                                     })
                                 }
@@ -159,11 +170,11 @@ const CreateSetScreen = () => {
                             <TextInput
                                 style={styles.input}
                                 placeholder="Definition"
-                                value={card.definition}
+                                value={card.Definition}
                                 onChangeText={(text) =>
                                     setFlashcards((prev) => {
                                         const updated = [...prev];
-                                        updated[index].definition = text;
+                                        updated[index].Definition = text;
                                         return updated;
                                     })
                                 }
