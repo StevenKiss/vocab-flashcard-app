@@ -23,6 +23,7 @@ const FlashcardScreen = () => {
     const [isShuffleOn, setIsShuffleOn] = useState(false);          // Flag for shuffle
     const [swipeHistory, setSwipeHistory] = useState([]);           // Track swiped cards
     const [currentIndex, setCurrentIndex] = useState(0);            // Tracks card index
+    const [originalDeck, setOriginalDeck] = useState([...vocab]);   // Keeps original deck
 
     const [preShuffleDeck, setPreSuffleDeck] = useState(null);      // Deck state before shuffle
     const [canUndo, setCanUndo] = useState(true);                   // Whether user can undo or not
@@ -130,7 +131,7 @@ const FlashcardScreen = () => {
 
     // Restart the deck
     const restartDeck = () => {
-        let newDeck = [...vocab];
+        let newDeck = [...originalDeck];
         if (isShuffleOn) {
             // Shuffle unknown words if shuffle mode is on
             for (let i = newDeck.length - 1; i > 0; i--) {
@@ -146,7 +147,7 @@ const FlashcardScreen = () => {
         setFinished(false);
         setProgress(0);
         resetCardToFront();
-        setCanUndo(true);
+        setCanUndo(false);
     };
 
     // Practice only unknown words
@@ -215,7 +216,7 @@ const FlashcardScreen = () => {
     const revertShuffle = () => {
         if (preShuffleDeck) {
             // Get remaining cards from the original deck
-            const remainingCards = preShuffleDeck.deck.filter(
+            const remainingCards = originalDeck.filter(
                 (card) =>
                     !knownWords.some((knownCard) => areCardsEqual(card, knownCard)) &&
                     !unknownWords.some((unknownCard) => areCardsEqual(card, unknownCard))
@@ -226,6 +227,7 @@ const FlashcardScreen = () => {
 
             // Update states
             setCurrentDeck(adjustedDeck);
+            setCurrentIndex(knownWords.length + unknownWords.length);
             resetCardToFront();
             setPreSuffleDeck(null);
             setCanUndo(swipeHistory.length > 0);
