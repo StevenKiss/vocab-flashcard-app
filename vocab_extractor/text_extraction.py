@@ -49,6 +49,7 @@ def clean_pdf_text(text):
     # Remove extra spaces around punctuation
     text = re.sub(r'\s*，\s*', '，', text)  # Normalize commas
     text = re.sub(r'\s*:\s*', ': ', text)  # Normalize colons
+    text = re.sub(r'\s*;\s*', '; ', text)  # Normalize semi-colons
     text = re.sub(r'\s+', ' ', text)  # Replace multiple spaces with one
 
      # Step 3: Add clear delimiters before new entries

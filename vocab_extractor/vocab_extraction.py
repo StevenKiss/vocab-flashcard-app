@@ -14,7 +14,7 @@ def extract_vocab(text):
 
     print(f"This is the cleaned text:\n {cleaned_text}")
     # Use regex to match Chinese characters
-    pattern = r'([\u4e00-\u9fff，]+)\s*，\s*([a-zA-Zāáǎàēéěèōóǒòūúǔùīíǐìüǘǚǜ\s]+):\s*(.+?)(?=\n|$)'
+    pattern = r'([\u4e00-\u9fff，]+)\s*[，；]\s*([a-zA-Zāáǎàēéěèōóǒòūúǔùīíǐìüǘǚǜ\s]+):\s*(.+?)(?=\n|$)'
     #pattern = r'([\u4e00-\u9fff，]+)\s*，\s*([a-zA-Zāáǎàēéěèōóǒòūúǔùīíǐìüǘǚǜ\s]+):\s*(.+?)(?=\n[\u4e00-\u9fff，]+，|$)'
     #pattern = r'([\u4e00-\u9fff，]+)，([a-zA-Zāáǎàēéěèōóǒòūúǔùīíǐìüǘǚǜ\s]+):\s*(.*?)(?=\n[\u4e00-\u9fff，]+，|$)'
     #pattern = r'([\u4e00-\u9fff，]+)，([a-zA-Zāáǎàēéěèōóǒòūúǔùīíǐìüǘǚǜ\s]+):\s*(.+?)(?=\n[\u4e00-\u9fff，]+，|$)'
