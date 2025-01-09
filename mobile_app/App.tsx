@@ -2,7 +2,7 @@ import React, { useEffect, useState} from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import {createStackNavigator} from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { onAuthStateChanged } from 'firebase/auth';
 
@@ -57,7 +57,6 @@ function LibraryStackScreen() {
 }
 
 // Add Stack
-
 function AddStackScreen() {
   return (
     <AddStack.Navigator screenOptions={{headerShown: false}}>
