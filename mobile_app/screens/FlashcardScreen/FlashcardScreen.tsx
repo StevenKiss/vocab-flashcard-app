@@ -130,10 +130,18 @@ const FlashcardScreen = () => {
 
     // Restart the deck
     const restartDeck = () => {
+        let newDeck = [...vocab];
+        if (isShuffleOn) {
+            // Shuffle unknown words if shuffle mode is on
+            for (let i = newDeck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newDeck[i], newDeck[j]] = [newDeck[j], newDeck[i]];
+            }
+        }
         setKnownWords([]);
         setUnknownWords([]);
         setCurrentIndex(0);
-        setCurrentDeck([...vocab]);
+        setCurrentDeck(newDeck);
         setDeckComplete(false);
         setFinished(false);
         setProgress(0);
@@ -143,7 +151,15 @@ const FlashcardScreen = () => {
 
     // Practice only unknown words
     const practiceUnknownWords = () => {
-        setCurrentDeck([...unknownWords]);
+        let newDeck = [...unknownWords];
+        if (isShuffleOn) {
+            // Shuffle unknown words if shuffle mode is on
+            for (let i = newDeck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newDeck[i], newDeck[j]] = [newDeck[j], newDeck[i]];
+            }
+        }
+        setCurrentDeck(newDeck);
         setKnownWords([]);
         setUnknownWords([]);
         setDeckComplete(false);
