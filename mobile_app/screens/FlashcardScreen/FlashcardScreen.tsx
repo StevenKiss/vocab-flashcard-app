@@ -47,7 +47,7 @@ const FlashcardScreen = () => {
         const completed = knownWords.length + unknownWords.length;
         const calculatedProgress = total > 0 ? completed / total : 0;
         setProgress(calculatedProgress);
-    }, [knownWords, unknownWords]);
+    }, [knownWords, unknownWords, currentDeck]);
 
     // Front card rotation
     const frontInterpolate = flipAnim.interpolate({
@@ -158,6 +158,15 @@ const FlashcardScreen = () => {
         isFront.current = true;
     }
 
+    // Helper function to compare cards
+    const areCardsEqual = (card1, card2) => {
+        return (
+            card1.Character === card2.Character &&
+            card1.Definition === card2.Definition &&
+            card1.Pinyin === card2.Pinyin
+        );
+    };
+
     // Shuffle logic
     const shuffleDeck = () => {
         // Store state before shuffle
@@ -169,26 +178,41 @@ const FlashcardScreen = () => {
             currentIndex,
         });
 
-        const shuffledDeck = [...currentDeck];
-        for (let i = shuffledDeck.length -1; i > 0; i--) {
+        const remainingCards = currentDeck.filter(
+            (card) =>
+                !knownWords.some((knownCard) => areCardsEqual(card, knownCard)) &&
+                !unknownWords.some((unknownCard) => areCardsEqual(card, unknownCard))
+        );
+
+        // Shuffle the remaining cards
+        for (let i = remainingCards.length -1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
-            [shuffledDeck[i], shuffledDeck[j]] = [shuffledDeck[j], shuffledDeck[i]];
+            [remainingCards[i], remainingCards[j]] = [remainingCards[j], remainingCards[i]];
         }
+        const shuffledDeck = [...knownWords, ...unknownWords, ...remainingCards];
+
         setCurrentDeck(shuffledDeck);
-        setCurrentIndex(0);
+        setCurrentIndex(knownWords.length + unknownWords.length);
         resetCardToFront();
     };
 
     const revertShuffle = () => {
         if (preShuffleDeck) {
-            setCurrentDeck(preShuffleDeck.deck);
-            setKnownWords(preShuffleDeck.knownWords);
-            setUnknownWords(preShuffleDeck.unknownWords);
-            setSwipeHistory(preShuffleDeck.swipeHistory);
-            setCurrentIndex(preShuffleDeck.currentIndex);
+            // Get remaining cards from the original deck
+            const remainingCards = preShuffleDeck.deck.filter(
+                (card) =>
+                    !knownWords.some((knownCard) => areCardsEqual(card, knownCard)) &&
+                    !unknownWords.some((unknownCard) => areCardsEqual(card, unknownCard))
+            );
+
+            // Combine known, unknown, and remaining cards in original order
+            const adjustedDeck = [...knownWords, ...unknownWords, ...remainingCards];
+
+            // Update states
+            setCurrentDeck(adjustedDeck);
             resetCardToFront();
             setPreSuffleDeck(null);
-            setCanUndo(true);
+            setCanUndo(swipeHistory.length > 0);
         }
     }
 
