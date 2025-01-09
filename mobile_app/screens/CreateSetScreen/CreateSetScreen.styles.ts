@@ -80,6 +80,21 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
     },
+    cardInfoContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 5,
+        paddingHorizontal: 2,
+    },
+    deleteButton: {
+        alignItems: 'flex-end',
+        zIndex: 1,
+    },
+    cardNumber: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#6F4E7C',
+    }
 });
 
 export default styles;
