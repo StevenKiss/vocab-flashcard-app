@@ -69,7 +69,7 @@ const CreateSetScreen = () => {
             };
 
             // Send vocab to backend for character extraction (remeber to update when on new IP each time)
-            const response = await axios.post("http://10.0.0.72:5000/process_vocab", newSet)
+            const response = await axios.post("http://192.168.4.23:5000/process_vocab", newSet)
 
             if (response.status === 200 && response.data.characters) {
                 newSet.characters = response.data.characters;

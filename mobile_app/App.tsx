@@ -20,6 +20,7 @@ import CharactersScreen from './screens/CharacterScreen/CharactersScreen';
 import ProfileScreen from './screens/ProfileScreen/ProfileScreen';
 import LoginScreen from './screens/LoginScreen/LoginScreen';
 import CreateSetScreen from './screens/CreateSetScreen/CreateSetScreen';
+import SetPreviewScreen from './screens/SetPreviewScreen/SetPreviewScreen';
 
 // Navigators
 const Tab = createBottomTabNavigator();
@@ -39,14 +40,21 @@ function LibraryStackScreen() {
         options={{headerShown: false}}
       />
 
-      {/* Flashcard is the secondary screen */}
+      {/* SetPreviewScreen for previewing the set */ }
+      <LibraryStack.Screen
+        name="SetPreviewScreen"
+        component={SetPreviewScreen}
+        options={({ route }) => ({ title: route.params?.title || 'Set Preview'})}
+      />
+
+      {/* Flashcard screen */}
       <LibraryStack.Screen 
         name="FlashcardScreen" 
         component={FlashcardScreen}
         options={({route}) => ({title: route.params?.title || 'Flashcard Set'})}
       />
 
-      {/* FlaschcardSettings is the third screen*/}
+      {/* FlaschcardSettings screen*/}
       <LibraryStack.Screen
         name="FlashcardSettingsScreen"
         component={FlashcardSettingsScreen}

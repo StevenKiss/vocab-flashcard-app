@@ -87,41 +87,51 @@ const LibraryScreen = () => {
   };
 
   // Render each flashcard set as a button
-  const renderFlashcardSet = ({item}: {item: {id: string; title: string; vocab: any[]}}) => (
-    <TouchableOpacity
-      style={[
-        styles.flashcardButton,
-        isEditMode && styles.editModeButton,
-        selectedSets.includes(item.id) && styles.selectedSet,
-      ]}
-      onPress={() => {
-        if (isEditMode) {
-          toggleSelectSet(item.id);
-        } else {
-          navigation.navigate('FlashcardScreen', {
-            setId: item.id,
-            title: item.title,
-            vocab: item.vocab,
-            frontContent: item.frontContent,
-            backContent: item.backContent,
-          });
-        }
-      }}
-    >
-      <View style={styles.flashcardContent}>
-        <View style={styles.textContainer}>
-          <Text style={styles.flashcardButtonText}>{item.title || 'Untitled Set'}</Text>
-        </View>
-        {isEditMode && (
-        <View style={styles.checkbox}>
-          <Text style={selectedSets.includes(item.id) ? styles.checkboxSelected : styles.checkboxUnselected}>
-            {selectedSets.includes(item.id) ? '✓' : ''}
-          </Text>
-        </View>
-      )}
-      </View>     
-    </TouchableOpacity>
-  );
+  const renderFlashcardSet = ({ item }) => {
+    return (
+        <TouchableOpacity
+            style={[
+                styles.flashcardButton,
+                isEditMode && styles.editModeButton,
+                selectedSets.includes(item.id) && styles.selectedSet,
+            ]}
+            onPress={() => {
+                if (isEditMode) {
+                    toggleSelectSet(item.id);
+                } else {
+                    navigation.navigate('SetPreviewScreen', {
+                        setId: item.id,
+                        setTitle: item.title,
+                        cards: item.vocab || [], // Ensure it defaults to an empty array
+                        progress: `${(item.vocab || []).filter((word) => word.isMastered).length}/${(item.vocab || []).length}`,
+                        creationDate: item.creationDate || 'Unknown',
+                    });
+                }
+            }}
+        >
+            <View style={styles.flashcardContent}>
+                <View style={styles.textContainer}>
+                    <Text style={styles.flashcardButtonText}>{item.title || 'Untitled Set'}</Text>
+                </View>
+                {isEditMode && (
+                    <View style={styles.checkbox}>
+                        <Text
+                            style={
+                                selectedSets.includes(item.id)
+                                    ? styles.checkboxSelected
+                                    : styles.checkboxUnselected
+                            }
+                        >
+                            {selectedSets.includes(item.id) ? '✓' : ''}
+                        </Text>
+                    </View>
+                )}
+            </View>
+        </TouchableOpacity>
+    );
+};
+
+  
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
