@@ -340,7 +340,7 @@ const FlashcardScreen = () => {
                         <>
                             {/* Header Section */}
                             <View style={styles.header}>
-                                <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('LibraryMain')}>
+                                <TouchableOpacity style={styles.navButton} onPress={() => navigation.goBack()}>
                                     <Icon name="arrow-back-ios-new" size={24} color ="#6F4E7C"/>
                                 </TouchableOpacity>
                                 <Text style={styles.progressText}>

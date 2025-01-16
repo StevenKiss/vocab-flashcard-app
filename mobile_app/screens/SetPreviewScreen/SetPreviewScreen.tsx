@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -13,36 +13,89 @@ import { db, auth } from '../../firebase/firebaseConfig';
 import { doc, deleteDoc } from 'firebase/firestore';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { Picker } from '@react-native-picker/picker';
 import styles from './SetPreviewScreen.styles';
 
 const SetPreviewScreen = ({ navigation, route }) => {
     const { setTitle, cards, progress, creationDate, setId } = route.params || {};
 
     const [optionsModalVisible, setOptionsModalVisible] = useState(false);
+    const [customizeModalVisible, setCustomizeModalVisible] = useState(false);
+    const [frontContent, setFrontContent] = useState('Character');
+    const [backContent, setBackContent] = useState('Definition');
     const [flippedStates, setFlippedStates] = useState(
         Array(cards.length).fill(false)
     );
+    const flipAnimations = useState(cards.map(() => new Animated.Value(0)))[0];
+    console.log('Front Content:', frontContent);
+    console.log('Back Content:', backContent);
 
-    // Toggle flip state for individual cards
-    const toggleFlip = (index) => {
-        const updatedFlippedStates = [...flippedStates];
-        updatedFlippedStates[index] = !updatedFlippedStates[index];
-        setFlippedStates(updatedFlippedStates);
+    // Helper functions for card flipping functionality
+    const flipCard = (index) => {
+        const toValue = flippedStates[index] ? 0 : 180;
+        Animated.timing(flipAnimations[index], {
+            toValue,
+            duration: 300,
+            useNativeDriver: true,
+        }).start(() => {
+            const updatedFlippedStates = [...flippedStates];
+            updatedFlippedStates[index] = !flippedStates[index];
+            setFlippedStates(updatedFlippedStates);
+        });
     };
 
+    const flipToFrontStyle = (index) => ({
+        transform: [
+            {
+                rotateY: flipAnimations[index].interpolate({
+                    inputRange: [0, 180],
+                    outputRange: ['0deg', '180deg'],
+                }),
+            },
+        ],
+    });
+
+    const flipToBackStyle = (index) => ({
+        transform: [
+            {
+                rotateY: flipAnimations[index].interpolate({
+                    inputRange: [0, 180],
+                    outputRange: ['180deg', '360deg'],
+                }),
+            },
+        ],
+    });
+
     const renderCard = ({ item, index }) => (
-        <TouchableOpacity
-            style={styles.cardContainer}
-            onPress={() => toggleFlip(index)}
-        >
-            <Animated.View
-                style={[styles.card, flippedStates[index] && styles.cardBack]}
+        <View style={styles.cardWrapper}>
+            <TouchableOpacity
+                style={styles.cardInnerContainer}
+                onPress={() => flipCard(index)}
+                activeOpacity={1}
             >
-                <Text style={styles.cardText}>
-                    {flippedStates[index] ? item.Definition : item.Character}
-                </Text>
-            </Animated.View>
-        </TouchableOpacity>
+                {/* Front Card */}
+                <Animated.View
+                    style={[
+                        styles.card,
+                        styles.cardFront,
+                        flipToFrontStyle(index),
+                    ]}
+                >
+                    <Text style={styles.cardText}>{item[frontContent] || 'No content'}</Text>
+                </Animated.View>
+
+                {/* Back Card */}
+                <Animated.View
+                    style={[
+                        styles.card,
+                        styles.cardBack,
+                        flipToBackStyle(index),
+                    ]}
+                >
+                    <Text style={styles.cardText}>{item[backContent] || 'No content'}</Text>
+                </Animated.View>
+            </TouchableOpacity>
+        </View>
     );
 
     // Confirm if user Wants to Delete the Set
@@ -51,8 +104,8 @@ const SetPreviewScreen = ({ navigation, route }) => {
             'Delete Flashcard Sets',
             `Are you sure you want to delete ${setTitle}?`,
             [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Delete', style: 'destructive', onPress: handleDelete, },
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'Delete', style: 'destructive', onPress: handleDelete, },
             ]
         );
     };
@@ -93,6 +146,16 @@ const SetPreviewScreen = ({ navigation, route }) => {
                 {/* Progress */}
                 <Text style={styles.progressText}>Progress: {progress}</Text>
 
+                {/* Customize Button */}
+                <TouchableOpacity
+                    style={styles.customizeButton}
+                    onPress={() => setCustomizeModalVisible(true)}
+                >
+                    <Text style={styles.customizeButtonText}>
+                        Customize: Front and Back
+                    </Text>
+                </TouchableOpacity>
+                
                 {/* Embedded Flashcards */}
                 <FlatList
                     data={cards}
@@ -109,6 +172,8 @@ const SetPreviewScreen = ({ navigation, route }) => {
                             navigation.navigate('FlashcardScreen', {
                                 title: setTitle,
                                 vocab: cards,
+                                frontContent,
+                                backContent,
                             })
                         }
                     >
@@ -163,6 +228,48 @@ const SetPreviewScreen = ({ navigation, route }) => {
                                 onPress={() => setOptionsModalVisible(false)}
                             >
                                 <Text style={styles.closeText}>Close</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </Modal>
+
+                {/* Customization Modal */}
+                <Modal
+                    visible={customizeModalVisible}
+                    transparent
+                    animationType="fade"
+                    onRequestClose={() => setCustomizeModalVisible(false)}
+                >
+                    <View style={styles.pickerModal}>
+                        <View style={styles.pickerContainer}>
+                            <Text style={styles.customizeTitle}>Customize Flashcards</Text>
+                            <Text style={styles.customizeLabel}>Front Content:</Text>
+                            <Picker
+                                selectedValue={frontContent}
+                                onValueChange={(value) => setFrontContent(value)}
+                                style={styles.picker}
+                                itemStyle={{ color: 'black'}}
+                            >
+                                <Picker.Item label="Chinese Character" value="Character" />
+                                <Picker.Item label="Pinyin" value="Pinyin" />
+                                <Picker.Item label="English Definition" value="Definition" />
+                            </Picker>
+                            <Text style={styles.customizeLabel}>Back Content:</Text>
+                            <Picker
+                                selectedValue={backContent}
+                                onValueChange={(value) => setBackContent(value)}
+                                style={styles.picker}
+                                itemStyle={{ color: 'black' }}
+                            >
+                                <Picker.Item label="Chinese Character" value="Character" />
+                                <Picker.Item label="Pinyin" value="Pinyin" />
+                                <Picker.Item label="English Definition" value="Definition" />
+                            </Picker>
+                            <TouchableOpacity
+                                style={styles.pickerSaveButton}
+                                onPress={() => setCustomizeModalVisible(false)}
+                            >
+                                <Text style={styles.pickerSaveText}>Save</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
