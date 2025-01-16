@@ -24,18 +24,21 @@ const WriteScreen = () => {
     title,
   } = route.params || {};
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [frontContent, setFrontContent] = useState(initialFrontContent || 'Character');
   const [knownWords, setKnownWords] = useState([]);
   const [unknownWords, setUnknownWords] = useState([]);
+  const [currentDeck, setCurrentDeck] = useState([...vocab]);
+  const [frontContent, setFrontContent] = useState(initialFrontContent || 'Character');
+  const [progress, setProgress] = useState(0);
   const [deckComplete, setDeckComplete] = useState(false);
   const [finished, setFinished] = useState(false);
   const [isShuffleOn, setIsShuffleOn] = useState(false);
   const [swipeHistory, setSwipeHistory] = useState([]);
-  const [progress, setProgress] = useState(0);
-  const [preShuffleDeck, setPreShuffleDeck] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [originalDeck, setOriginalDeck] = useState([...vocab]);
+  const [lastShuffleIndex, setLastShuffleIndex] = useState(0);
 
-  const originalDeck = useRef([...vocab]); // Keeps the original unmodified deck
+  const [preShuffleDeck, setPreShuffleDeck] = useState(null);
+  const [canUndo, setCanUndo] = useState(true);
 
   // HTML for HanziWriter
   const getHtmlContent = (vocabWord, currentIndex) => {
@@ -91,105 +94,314 @@ const WriteScreen = () => {
     `;
     };
 
-  // Progress calculation
-  useEffect(() => {
-    const total = vocab.length;
-    const completed = knownWords.length + unknownWords.length;
-    const calculatedProgress = total > 0 ? completed / total : 0;
-    setProgress(calculatedProgress);
-  }, [knownWords, unknownWords, vocab]);
+    // When user changes features in settings modal, change them
 
-  // Shuffle the deck
-  const shuffleDeck = () => {
-    const shuffled = [...vocab].sort(() => Math.random() - 0.5);
-    setCurrentIndex(0);
-    setKnownWords([]);
-    setUnknownWords([]);
-    setProgress(0);
-    setDeckComplete(false);
-    setFinished(false);
-    Alert.alert('Shuffled', 'The deck has been shuffled!');
-  };
+    // Progress bar logic
+    useEffect(() => {
+        const total = vocab.length;
+        const completed = knownWords.length + unknownWords.length;
+        const calculatedProgress = total > 0 ? completed / total : 0;
+        setProgress(calculatedProgress);
+    }, [knownWords, unknownWords, vocab]);
 
-  // Undo last swipe
-  const undoLast = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex((prevIndex) => prevIndex - 1);
-      setKnownWords((prev) => prev.slice(0, -1));
-      setUnknownWords((prev) => prev.slice(0, -1));
-    } else {
-      Alert.alert('No previous characters!', 'You are already at the first character.');
-    }
-  };
+    // Handle Known
+    const handleKnown = () => {
+        if (currentIndex < currentDeck.length) {
+            const word = currentDeck[currentIndex];
+            const newKnown = [...knownWords, word];
+            setKnownWords(newKnown);
+            setSwipeHistory((prev) => [...prev, { word, choice: 'known'}]);
+            setCurrentIndex(currentIndex + 1);
+            checkIfDeckComplete(currentIndex + 1, newKnown, unknownWords);
+        }
+    };
 
-  const currentVocabWord = vocab[currentIndex]?.Character || 'No content';
-  const referenceText = vocab[currentIndex]?.[frontContent] || 'No content';
+    // Handle Unknown
+    const handleUnknown = () => {
+        if (currentIndex < currentDeck.length) {
+            const word = currentDeck[currentIndex];
+            const newUnknown = [...unknownWords, word];
+            setUnknownWords(newUnknown);
+            setSwipeHistory((prev) => [...prev, { word, choice: 'unknown'}]);
+            setCurrentIndex(currentIndex + 1);
+            checkIfDeckComplete(currentIndex + 1, knownWords, newUnknown);
+        }
+    };
 
-  return (
-    <View style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
-
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate('SetPreviewScreen', {
-                setId,
-                setTitle: title,
-                cards: vocab,
-                progress: progress * vocab.length,
-              })
+    // Check if deck is complete
+    const checkIfDeckComplete = (currentIndex, updatedKnown, updatedUnknown) => {
+        if (currentIndex === currentDeck.length) {
+            if (updatedUnknown.length == 0) {
+                setFinished(true);
+            } else {
+                setDeckComplete(true);
             }
-          >
-            <Icon name="arrow-back-ios-new" size={24} color="#6F4E7C" />
-          </TouchableOpacity> 
-          <Text style={styles.progressText}>
-            {knownWords.length + unknownWords.length}/{vocab.length}
-          </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('FlashcardSettingsScreen')}>
-            <Icon name="settings" size={24} color="#6F4E7C" />
-          </TouchableOpacity>
-        </View>
+        }
+    };
 
-        {/* Custom Progress Bar */}
-        <View style={styles.progressBarContainer}>
-          <View style={[styles.progressBarFill, { width: `${progress * 100}%` }]} />
-        </View>
+    // Restart the deck
+    const restartDeck = () => {
+        let newDeck = [...originalDeck];
+        if (isShuffleOn) {
+            // Shuffle unknown words if shuffle mode is on
+            for (let i = newDeck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newDeck[i], newDeck[j]] = [newDeck[j], newDeck[i]];
+            }
+        }
+        setKnownWords([]);
+        setUnknownWords([]);
+        setCurrentIndex(0);
+        setCurrentDeck(newDeck);
+        setDeckComplete(false);
+        setFinished(false);
+        setProgress(0);
+        setSwipeHistory([]);
+        setLastShuffleIndex(0);
+        setCanUndo(false);
+    };
 
-        {/* Known and Unknown Counts */}
-        <View style={styles.statsContainer}>
-          <Text style={styles.unknownText}>{unknownWords.length}</Text>
-          <Text style={styles.knownText}>{knownWords.length}</Text>
-        </View>
+    // Practice only unknown words
+    const practiceUnknownWords = () => {
+        let newDeck = [...unknownWords];
+        if (isShuffleOn) {
+            // Shuffle unknown words if shuffle mode is on
+            for (let i = newDeck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newDeck[i], newDeck[j]] = [newDeck[j], newDeck[i]];
+            }
+        }
 
-        {/* Reference Text */}
-        <View style={styles.referenceContainer} >
-            <Text style={styles.referenceText}>{referenceText}</Text>
-        </View>
+        setCurrentDeck(newDeck);
+        setKnownWords([]);
+        setUnknownWords([]);
+        setCurrentIndex(0);
+        setDeckComplete(false);
+        setSwipeHistory([]);
+        setLastShuffleIndex(0);
+        setCanUndo(false);
+        setCanUndo(false);
+    }
 
-        {/* Hanzi Writer WebView */}
-        <View style={styles.writerContainer}>
-          <WebView
-            originWhitelist={['*']}
-            source={{ html: getHtmlContent(currentVocabWord, 0) }}
-            javaScriptEnabled
-            style={{ width: 300, height: 300 }}
-          />
-        </View>
+    // Helper function to compare cards
+    const areCardsEqual = (card1, card2) => {
+        return (
+            card1.Character === card2.Character &&
+            card1.Definition === card2.Definition &&
+            card1.Pinyin === card2.Pinyin
+        );
+    };
 
-        {/* Bottom Controls */}
-        <View style={styles.bottomSection}>
-          <TouchableOpacity onPress={undoLast} style={styles.navButton}>
-            <Icon name="undo" size={30} color="#6F4E7C" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={shuffleDeck} style={styles.navButton}>
-            <Icon name="shuffle" size={30} color="#6F4E7C" />
-          </TouchableOpacity>
+    // Shuffle logic
+    const shuffleDeck = () => {
+        // Store state before shuffle
+        setPreShuffleDeck({
+            deck: [...currentDeck],
+            knownWords: [...knownWords],
+            unknownWords: [...unknownWords],
+            swipeHistory: [...swipeHistory],
+            currentIndex,
+        });
+
+        const remainingCards = currentDeck.filter(
+            (card) =>
+                !knownWords.some((knownCard) => areCardsEqual(card, knownCard)) &&
+                !unknownWords.some((unknownCard) => areCardsEqual(card, unknownCard))
+        );
+
+        // Shuffle the remaining cards
+        for (let i = remainingCards.length -1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [remainingCards[i], remainingCards[j]] = [remainingCards[j], remainingCards[i]];
+        }
+        const shuffledDeck = [...knownWords, ...unknownWords, ...remainingCards];
+
+        setCurrentDeck(shuffledDeck);
+        setCurrentIndex(knownWords.length + unknownWords.length);
+        setCanUndo(false);
+    };
+
+    // Undo shuffle mode
+    const revertShuffle = () => {
+        if (preShuffleDeck) {
+            // Get remaining cards from the original deck
+            const remainingCards = originalDeck.filter(
+                (card) =>
+                    !knownWords.some((knownCard) => areCardsEqual(card, knownCard)) &&
+                    !unknownWords.some((unknownCard) => areCardsEqual(card, unknownCard))
+            );
+
+            // Combine known, unknown, and remaining cards in original order
+            const adjustedDeck = [...knownWords, ...unknownWords, ...remainingCards];
+
+
+            // Update states
+            setCurrentDeck(adjustedDeck);
+            setCurrentIndex(knownWords.length + unknownWords.length);
+            setCanUndo(swipeHistory.length > 0 && currentIndex > lastShuffleIndex);
+
+            setPreShuffleDeck(null);
+        }
+    }
+
+    // Toggle shuffle
+    const toggleShuffle = () => {
+        console.log("Toggle shuffle");
+        if (isShuffleOn) {
+            revertShuffle();
+        } else {
+            shuffleDeck();
+        }
+        setLastShuffleIndex(currentIndex);
+        setIsShuffleOn((prev) => !prev);
+    };
+
+    // Keep CanUndo up-to-date
+    useEffect(() => {
+        setCanUndo(
+            swipeHistory.length > 0 &&
+            currentIndex > 0 &&
+            currentIndex > lastShuffleIndex
+        );
+    }, [swipeHistory, currentIndex, lastShuffleIndex]);
+
+    // Undo logic
+    const handleUndo = () => {
+        if (!canUndo || currentIndex === 0 || currentIndex <= lastShuffleIndex) {
+            console.log("Cannot undo");
+            return;
+        }
+        if (swipeHistory.length > 0 && currentIndex > lastShuffleIndex) {
+            console.log("Undo: Before => Index:", currentIndex, "History length:", swipeHistory.length);
+
+            const lastSwipe = swipeHistory[swipeHistory.length - 1];
+            const { choice } = lastSwipe;
+
+            // Remove last entry from swipe History
+            console.log(`swipeHistory before: ${swipeHistory}`);
+            const newHistory = swipeHistory.slice(0, -1);
+            setSwipeHistory(newHistory);
+            console.log(`swipeHistory after: ${swipeHistory}`);
+
+
+            // Remove word from correct set
+            if (choice == 'known') {
+                setKnownWords((prev) => prev.slice(0, -1));
+            } else if (choice == 'unknown') {
+                setUnknownWords((prev) => prev.slice(0,-1));
+            }
+
+            setCurrentIndex((oldIndex) => (oldIndex > 0 ? oldIndex - 1 : 0));
+            setCanUndo(newHistory.length > 0 && currentIndex > lastShuffleIndex);
+        } else {
+            console.log("No swipes to undo");
+        }
+    };
+
+  const currentVocabWord = currentDeck[currentIndex]?.Character || 'No content';
+  const referenceText = currentDeck[currentIndex]?.[frontContent] || 'No content';
+
+    return (
+        <View style={styles.container}>
+            <SafeAreaView style={styles.safeArea}>
+            <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+                {finished ? (
+                    <View style={styles.finishedContainer}>
+                        <ConfettiCannon count={200} origin={{x: -10, y: 0}} />
+                        <Text style={styles.finishedText}>🎉 Congrats! You finished the set! 🎉</Text>
+                        <TouchableOpacity style={styles.button} onPress={restartDeck}>
+                            <Text style={styles.endButtonText}>Restart Write</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
+                            <Text style={styles.endButtonText}>Leave</Text>
+                        </TouchableOpacity>
+                    </View>
+                ) : deckComplete ? (
+                    <View style={styles.endContainer}>
+                        <Text style={styles.endText}>Almost there, continue Learning!</Text>
+                        <TouchableOpacity style={styles.button} onPress={practiceUnknownWords}>
+                            <Text style={styles.endButtonText}>Practice Remaining Flashcards</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.button} onPress={restartDeck}>
+                            <Text style={styles.endButtonText}>Restart Flashcards</Text>
+                        </TouchableOpacity>
+                    </View>
+                ) : (
+                    <>
+                        {/* Header */}
+                        <View style={styles.header}>
+                        <TouchableOpacity
+                            onPress={() =>
+                            navigation.navigate('SetPreviewScreen', {
+                                setId,
+                                setTitle: title,
+                                cards: vocab,
+                                progress: progress * vocab.length,
+                            })
+                            }
+                        >
+                            <Icon name="arrow-back-ios-new" size={24} color="#6F4E7C" />
+                        </TouchableOpacity> 
+                        <Text style={styles.progressText}>
+                            {knownWords.length + unknownWords.length}/{vocab.length}
+                        </Text>
+                        <TouchableOpacity onPress={() => navigation.navigate('FlashcardSettingsScreen')}>
+                            <Icon name="settings" size={24} color="#6F4E7C" />
+                        </TouchableOpacity>
+                        </View>
+
+                        {/* Custom Progress Bar */}
+                        <View style={styles.progressBarContainer}>
+                            <View style={[styles.progressBarFill, { width: `${progress * 100}%` }]} />
+                        </View>
+
+                        {/* Known and Unknown Counts */}
+                        <View style={styles.statsContainer}>
+                            <Text style={styles.unknownText}>{unknownWords.length}</Text>
+                            <Text style={styles.knownText}>{knownWords.length}</Text>
+                        </View>
+
+                        {/* Reference Text */}
+                        <View style={styles.referenceContainer} >
+                            <Text style={styles.referenceText}>{referenceText}</Text>
+                        </View>
+
+                        {/* Hanzi Writer WebView */}
+                        <View style={styles.writerContainer}>
+                        <WebView
+                            originWhitelist={['*']}
+                            source={{ html: getHtmlContent(currentVocabWord, 0) }}
+                            javaScriptEnabled
+                            style={{ width: 300, height: 300 }}
+                        />
+                        </View>
+                        {/* Correct/Incorrect Buttons */}
+                        <View style={styles.buttonsContainer}>
+                            <TouchableOpacity onPress={handleUnknown} style={styles.incorrectButton}>
+                                <Icon name="close" size={30} color="#FFFFFF" />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={handleKnown} style={styles.correctButton}>
+                                <Icon name="check" size={30} color="#FFFFFF" />
+                            </TouchableOpacity>
+                        </View>
+
+                        {/* Bottom Section */}
+                        <View style={styles.bottomSection}>
+                            {/* Undo Button */}
+                            <TouchableOpacity style={[styles.navButton, { opacity: canUndo ? 1 : 0.5},]} onPress={handleUndo} disabled={!canUndo}>
+                                <Icon name="undo" size={30} color={canUndo ? "#6F4E7C" : "#A9A9A9"} />
+                            </TouchableOpacity>
+
+                            {/* Shuffle Button */}
+                            <TouchableOpacity style={styles.navButton} onPress={toggleShuffle}>
+                                <Icon name={isShuffleOn ? 'shuffle-on' : 'shuffle'} size={24} color="#6F4E7C" />
+                            </TouchableOpacity>
+                        </View>
+                    </>   
+                )}
+            </SafeAreaView>
         </View>
-      </SafeAreaView>
-    </View>
-  );
+    );
 };
 
 export default WriteScreen;
