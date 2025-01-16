@@ -10,13 +10,13 @@ import Icon from 'react-native-vector-icons/MaterialIcons'
 const FlashcardScreen = () => {
     const route = useRoute();
     const navigation = useNavigation();
-    const {vocab} = route.params; // Vocab taken from LibraryScreen
+    const {vocab, frontContent: initialFrontContent, backContent: initialBackContent, setId, progress: overallProgress, title} = route.params || {}; // Vocab taken from LibraryScreen
 
     const [knownWords, setKnownWords] = useState([]);               // Set known words to empty
     const [unknownWords, setUnknownWords] = useState([]);           // Set unknown words to empty
     const [currentDeck, setCurrentDeck] = useState([...vocab]);     // Current active deck
-    const [frontContent, setFrontContent] = useState('Character');  // Default: Chinese Character
-    const [backContent, setBackContent] = useState('Definition');   // Default: English
+    const [frontContent, setFrontContent] = useState(initialFrontContent ||'Character');  // Default: Chinese Character
+    const [backContent, setBackContent] = useState(initialBackContent || 'Definition');   // Default: English
     const [progress, setProgress] = useState(0);                    // Used to update Progress
     const [deckComplete, setDeckComplete] = useState(false);        // Flag for end-of-deck
     const [finished, setFinished] = useState(false);                // Flag for finished deck
@@ -340,7 +340,14 @@ const FlashcardScreen = () => {
                         <>
                             {/* Header Section */}
                             <View style={styles.header}>
-                                <TouchableOpacity style={styles.navButton} onPress={() => navigation.goBack()}>
+                                <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('SetPreviewScreen', {
+                                    setTitle: title,
+                                    cards: vocab,
+                                    frontContent,
+                                    backContent,
+                                    setId,
+                                    progress: progress * currentDeck.length,
+                                })}>
                                     <Icon name="arrow-back-ios-new" size={24} color ="#6F4E7C"/>
                                 </TouchableOpacity>
                                 <Text style={styles.progressText}>

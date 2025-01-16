@@ -134,7 +134,7 @@ const SetPreviewScreen = ({ navigation, route }) => {
             <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
                 {/* Header */}
                 <View style={styles.header}>
-                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <TouchableOpacity onPress={() => navigation.navigate('LibraryMain')}>
                         <Icon name="close" size={24} color="#6F4E7C" />
                     </TouchableOpacity>
                     <Text style={styles.title}>{setTitle}</Text>
@@ -144,7 +144,7 @@ const SetPreviewScreen = ({ navigation, route }) => {
                 </View>
 
                 {/* Progress */}
-                <Text style={styles.progressText}>Progress: {progress}</Text>
+                <Text style={styles.progressText}>Progress: {progress} / {cards.length}</Text>
 
                 {/* Customize Button */}
                 <TouchableOpacity
@@ -174,6 +174,7 @@ const SetPreviewScreen = ({ navigation, route }) => {
                                 vocab: cards,
                                 frontContent,
                                 backContent,
+                                setId,
                             })
                         }
                     >
