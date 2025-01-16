@@ -144,7 +144,7 @@ const SetPreviewScreen = ({ navigation, route }) => {
                 </View>
 
                 {/* Progress */}
-                <Text style={styles.progressText}>Progress: {progress} / {cards.length}</Text>
+                <Text style={styles.progressText}>Progress: {progress}</Text>
 
                 {/* Customize Button */}
                 <TouchableOpacity
@@ -182,7 +182,14 @@ const SetPreviewScreen = ({ navigation, route }) => {
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={[styles.actionButton, styles.writeModeButton]}
-                        onPress={() => alert('Write Mode Coming Soon!')}
+                        onPress={() => 
+                            navigation.navigate('WriteScreen', {
+                                title: setTitle,
+                                vocab: cards,
+                                frontContent,
+                                setId,
+                            })
+                        }
                     >
                         <Text style={styles.buttonText}>Write</Text>
                     </TouchableOpacity>

@@ -21,6 +21,7 @@ import ProfileScreen from './screens/ProfileScreen/ProfileScreen';
 import LoginScreen from './screens/LoginScreen/LoginScreen';
 import CreateSetScreen from './screens/CreateSetScreen/CreateSetScreen';
 import SetPreviewScreen from './screens/SetPreviewScreen/SetPreviewScreen';
+import WriteScreen from './screens/WriteScreen/WriteScreen';
 
 // Navigators
 const Tab = createBottomTabNavigator();
@@ -59,6 +60,13 @@ function LibraryStackScreen() {
         name="FlashcardSettingsScreen"
         component={FlashcardSettingsScreen}
         options={{ title: 'Flashcard Settings' }}
+      />
+
+      {/* Write Screen */}
+      <LibraryStack.Screen
+        name="WriteScreen"
+        component={WriteScreen}
+        options={({ route }) => ({ title: route.params?.title || 'Write Mode'})}
       />
     </LibraryStack.Navigator>
   );
