@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     writerContainer: {
-        marginTop: 80,
+        marginTop: 60,
         height: 300,
         justifyContent: 'center',
         alignItems: 'center',
@@ -60,7 +60,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingHorizontal: 20,
-        marginTop: 20,
     },
     navButton: {
         padding: 15,
@@ -73,10 +72,20 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         paddingHorizontal: 15,
     },
+    referenceRow: {
+        height: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     referenceText: {
         fontSize: 22,
         fontWeight: 'bold',
         color: '#6F4E7C',
+        textAlign: 'center',
+    },
+    hiddenText: {
+        fontSize: 22,
+        color: 'transparent',
         textAlign: 'center',
     },
     finishedContainer: {
@@ -136,6 +145,68 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         alignItems: 'center',
         marginVertical: 20,
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: {
+        width: '90%',
+        padding: 20,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        overflow: 'hidden',
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 20,
+    },
+    pickerContainer: {
+        width: '100%',
+        marginBottom: 20,
+        justifyContent: 'center'
+    },
+    label: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginBottom: 5,
+    },
+    picker: {
+        width: '100%',
+        height: 40,
+        borderWidth: 1,
+        borderColor: '#6F4E7C',
+        borderRadius: 5,
+        backgroundColor: '#EFE7EC'
+    },
+    toggleContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '100%',
+        marginBottom: 20,
+    },
+    sliderContainer: {
+        width: '100%',
+        marginBottom: 20,
+    },
+    slider: {
+        width: '100%',
+        height: 40,
+    },
+    closeButton: {
+        backgroundColor: '#6F4E7C',
+        padding: 10,
+        borderRadius: 5,
+    },
+    closeButtonText: {
+        color: '#FFFFFF',
+        fontWeight: 'bold',
     },
 });
 

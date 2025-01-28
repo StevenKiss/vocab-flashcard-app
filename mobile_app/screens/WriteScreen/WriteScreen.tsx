@@ -3,16 +3,18 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Animated,
   StatusBar,
-  Alert,
+  Modal,
+  Switch,
 } from 'react-native';
+import Slider from '@react-native-community/slider';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import styles from './WriteScreen.styles';
+import { Picker } from '@react-native-picker/picker';
 
 const WriteScreen = () => {
   const route = useRoute();
@@ -24,10 +26,17 @@ const WriteScreen = () => {
     title,
   } = route.params || {};
 
+  const [modalVisible, setModalVisisble] = useState(false);
+  const [referenceContent, setReferenceContent] = useState(initialFrontContent || 'Character');
+  const [showOutline, setShowOutline] = useState(true);
+  const [showDefinition, setShowDefinition] = useState(true);
+  const [showPinyin, setShowPinyin] = useState(true);
+  const [lineThickness, setLineThickness] = useState(25);
+  const [autoCheck, setAutoCheck] = useState(false);
+
   const [knownWords, setKnownWords] = useState([]);
   const [unknownWords, setUnknownWords] = useState([]);
   const [currentDeck, setCurrentDeck] = useState([...vocab]);
-  const [frontContent, setFrontContent] = useState(initialFrontContent || 'Character');
   const [progress, setProgress] = useState(0);
   const [deckComplete, setDeckComplete] = useState(false);
   const [finished, setFinished] = useState(false);
@@ -59,6 +68,7 @@ const WriteScreen = () => {
       <script>
         const characters = ${JSON.stringify(characters)};
         let currentCharacterIndex = ${currentIndex};
+        let hasMistakes = false;
         
         function startQuiz() {
             const currentCharacter = characters[currentCharacterIndex];
@@ -69,19 +79,25 @@ const WriteScreen = () => {
                 strokeAnimationSpeed: 1,
                 radicalColor: '#6F4E7C',
                 showCharacter: false,
-                showOutline: true,
-                drawingWidth: 20
+                showOutline: ${showOutline},
+                drawingWidth: ${lineThickness}
             });
 
             writer.quiz({
+                onMistake: (strokeData) => {
+                    hasMistakes = true; //Track Mistakes
+                },
                 onComplete: () => {
-                    currentCharacterIndex++;
-                    if (currentCharacterIndex < characters.length) {
-                        document.getElementById('hanzi-target').innerHTML = ''; // Clears the canvas
-                        startQuiz();
-                    } else {
-                        alert('You completed the vocab word: ${vocabWord}!'); 
-                    }
+                    setTimeout(() => {
+                        currentCharacterIndex++;
+                        if (currentCharacterIndex < characters.length) {
+                            document.getElementById('hanzi-target').innerHTML = ''; // Clears the canvas
+                            startQuiz();
+                        } else {
+                            //alert('You completed the vocab word: ${vocabWord}!'); 
+                        }
+                    }, 1000)
+                    
                 },
             });
         }
@@ -102,7 +118,7 @@ const WriteScreen = () => {
         const completed = knownWords.length + unknownWords.length;
         const calculatedProgress = total > 0 ? completed / total : 0;
         setProgress(calculatedProgress);
-    }, [knownWords, unknownWords, vocab]);
+    }, [knownWords, unknownWords, currentDeck]);
 
     // Handle Known
     const handleKnown = () => {
@@ -299,7 +315,6 @@ const WriteScreen = () => {
     };
 
   const currentVocabWord = currentDeck[currentIndex]?.Character || 'No content';
-  const referenceText = currentDeck[currentIndex]?.[frontContent] || 'No content';
 
     return (
         <View style={styles.container}>
@@ -326,7 +341,7 @@ const WriteScreen = () => {
                             <Text style={styles.endButtonText}>Restart Flashcards</Text>
                         </TouchableOpacity>
                     </View>
-                ) : (
+                ) : (                    
                     <>
                         {/* Header */}
                         <View style={styles.header}>
@@ -343,9 +358,9 @@ const WriteScreen = () => {
                             <Icon name="arrow-back-ios-new" size={24} color="#6F4E7C" />
                         </TouchableOpacity> 
                         <Text style={styles.progressText}>
-                            {knownWords.length + unknownWords.length}/{vocab.length}
+                            {knownWords.length + unknownWords.length}/{currentDeck.length}
                         </Text>
-                        <TouchableOpacity onPress={() => navigation.navigate('FlashcardSettingsScreen')}>
+                        <TouchableOpacity onPress={() => setModalVisisble(true)}>
                             <Icon name="settings" size={24} color="#6F4E7C" />
                         </TouchableOpacity>
                         </View>
@@ -363,7 +378,24 @@ const WriteScreen = () => {
 
                         {/* Reference Text */}
                         <View style={styles.referenceContainer} >
-                            <Text style={styles.referenceText}>{referenceText}</Text>
+                            <View style={styles.referenceRow}>
+                                {showDefinition ? (
+                                    <Text style={styles.referenceText}>
+                                        {currentDeck[currentIndex]?.Definition || 'No Definition'}
+                                    </Text>
+                                ) : (
+                                    <Text style={styles.hiddenText}> </Text>
+                                )} 
+                            </View>
+                            <View style={styles.referenceRow}>
+                                {showPinyin ? (
+                                    <Text style={styles.referenceText}>
+                                        {currentDeck[currentIndex]?.Pinyin || 'No Definition'}
+                                    </Text>
+                                ) : (
+                                    <Text style={styles.hiddenText}> </Text>
+                                )} 
+                            </View>
                         </View>
 
                         {/* Hanzi Writer WebView */}
@@ -397,6 +429,78 @@ const WriteScreen = () => {
                                 <Icon name={isShuffleOn ? 'shuffle-on' : 'shuffle'} size={24} color="#6F4E7C" />
                             </TouchableOpacity>
                         </View>
+
+                        {/* Modal Section*/}
+                        <Modal
+                            visible={modalVisible}
+                            transparent={true}
+                            animationType='fade'
+                            onRequestClose={() => setModalVisisble(false)}
+                        >
+                            <View style={styles.modalContainer}>
+                                <View style={styles.modalContent}>
+                                    <Text style={styles.modalTitle}>Settings</Text>
+
+                                    {/*Reference content*/}
+                                    <View style={styles.toggleContainer}>
+                                        <Text style={styles.label}>Show Definition</Text>
+                                        <Switch
+                                            value={showDefinition}
+                                            onValueChange={() => setShowDefinition((prev) => !prev)}
+                                        />
+                                    </View>
+
+                                    <View style={styles.toggleContainer}>
+                                        <Text style={styles.label}>Show Pinyin</Text>
+                                        <Switch
+                                            value={showPinyin}
+                                            onValueChange={() => setShowPinyin((prev) => !prev)}
+                                        />
+                                    </View>
+
+                                    {/*Outline toggler*/}
+                                    <View style={styles.toggleContainer}>
+                                        <Text style={styles.label}>Show Outline</Text>
+                                        <Switch
+                                            value={showOutline}
+                                            onValueChange={() => setShowOutline((prev) => !prev)}
+                                        />
+                                    </View>
+
+                                    {/* Auto Checker */}
+                                    <View style={styles.toggleContainer}>
+                                        <Text style={styles.label}>Enable Auto-Check</Text>
+                                        <Switch
+                                            value={autoCheck}
+                                            onValueChange={() => setAutoCheck((prev) => !prev)}
+                                        />
+                                    </View>
+
+                                    {/*Stroke thickness*/}
+                                    <View style={styles.sliderContainer}>
+                                        <Text style={styles.label}>Stroke Thickness</Text>
+                                        <Slider
+                                            style={styles.slider}
+                                            minimumValue={1}
+                                            maximumValue={50}
+                                            step={1}
+                                            value={lineThickness}
+                                            onValueChange={(value) => setLineThickness(value)}
+                                            minimumTrackTintColor='#6F4E7C'
+                                            maximumTrackTintColor='#E0E0E0'
+                                        />
+                                        <Text>{lineThickness}</Text>
+                                    </View>
+
+                                    <TouchableOpacity
+                                        style={styles.closeButton}
+                                        onPress={() => setModalVisisble(false)}
+                                    >
+                                        <Text style={styles.closeButtonText}>Close</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </Modal>
                     </>   
                 )}
             </SafeAreaView>
