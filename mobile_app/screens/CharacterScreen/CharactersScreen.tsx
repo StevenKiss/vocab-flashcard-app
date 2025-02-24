@@ -85,8 +85,8 @@ const CharactersScreen = () => {
       <script>
         console.log("HanziWriter Scriptloaded");
         var writer = HanziWriter.create('character-target', '${character}', {
-          width: 150,
-          height: 150,
+          width: 300,
+          height: 300,
           padding: 5,
           strokeAnimationSpeed: 2,
           radicalColor: '#168F16',
@@ -172,7 +172,7 @@ const CharactersScreen = () => {
                   domStorageEnabled={true}
                   allowFileAccess={true}
                   allowUniversalAccessFromFileURLs={true}
-                  style={{ width: 100, height: 100, backgroundColor: 'transparent' }}
+                  style={{ width: 300, height: 300, backgroundColor: 'transparent' }}
                   onLoad={() => console.log("WebView Loaded Successfully")}
                   onError={(e) => console.error("WebView Error:", e.nativeEvent)}
                 />
