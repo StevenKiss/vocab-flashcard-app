@@ -140,6 +140,16 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    incorrectButtonPlaceholder: {
+        width: 60, 
+        height: 60, 
+        backgroundColor: 'transparent', 
+    },
+    correctButtonPlaceholder: {
+        width: 60, 
+        height: 60,
+        backgroundColor: 'transparent', 
+    },
     buttonsContainer: {
         flexDirection: 'row',
         justifyContent: 'space-around',

@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
         padding: 20,
         borderRadius: 10,
-        width: '80%',
+        width: '90%',
         alignItems: 'center',
     },
     modalTitle: {
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         color: '#6F4E7C',
     },
-    modalPingyin: {
+    modalPinyin: {
         fontSize: 18,
         color: "#333",
         marginBottom: 5,
@@ -82,6 +82,12 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginBottom: 10,
         textAlign: 'center',
+    },
+    modalPhraseHeader: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 5,
+        color: '#6f4E7C'
     },
     modalSets: {
         fontSize: 14,

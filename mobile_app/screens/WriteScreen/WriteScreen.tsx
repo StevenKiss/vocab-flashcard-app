@@ -60,10 +60,19 @@ const WriteScreen = () => {
       <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
       <style>
         body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100%; }
+        //#grid-background { width: 1000px; height: 1000px; position: absolute; }
         #hanzi-target { width: 1000px; height: 1000px; }
       </style>
     </head>
     <body>
+      /*<svg id="grid-background" xmlns="http://www.w3.org/2000/svg" width="1000" height="1000">
+        <!-- Diagonal lines -->
+        <line x1="0" y1="0" x2="1000" y2="1000" stroke="#DDD" stroke-width="2"/>
+        <line x1="1000" y1="0" x2="0" y2="1000" stroke="#DDD" stroke-width="2"/>
+        <!-- Vertical and horizontal lines -->
+        <line x1="500" y1="0" x2="500" y2="1000" stroke="#DDD" stroke-width="2"/>
+        <line x1="0" y1="500" x2="1000" y2="500" stroke="#DDD" stroke-width="2"/>
+      </svg>*/
       <div id="hanzi-target"></div>
       <script>
         const characters = ${JSON.stringify(characters)};
@@ -94,14 +103,14 @@ const WriteScreen = () => {
                             document.getElementById('hanzi-target').innerHTML = ''; // Clears the canvas
                             startQuiz();
                         } else {
-                            //alert('You completed the vocab word: ${vocabWord}!'); 
+                            const result = {success: !hasMistakes };
+                            window.ReactNativeWebView.postMessage(JSON.stringify(result));
                         }
                     }, 1000)
                     
                 },
             });
         }
-
         
         startQuiz();
       </script>
@@ -114,7 +123,7 @@ const WriteScreen = () => {
 
     // Progress bar logic
     useEffect(() => {
-        const total = vocab.length;
+        const total = currentDeck.length;
         const completed = knownWords.length + unknownWords.length;
         const calculatedProgress = total > 0 ? completed / total : 0;
         setProgress(calculatedProgress);
@@ -152,6 +161,16 @@ const WriteScreen = () => {
             } else {
                 setDeckComplete(true);
             }
+        }
+    };
+
+    // Webv message handling for auto-check
+    const handleWebViewMessage = (event) => {
+        const data = JSON.parse(event.nativeEvent.data);
+        if (data.success) {
+            handleKnown();
+        } else {
+            handleUnknown();
         }
     };
 
@@ -405,10 +424,16 @@ const WriteScreen = () => {
                             source={{ html: getHtmlContent(currentVocabWord, 0) }}
                             javaScriptEnabled
                             style={{ width: 300, height: 300 }}
+                            onMessage={(event) => {
+                                if (autoCheck) {
+                                    handleWebViewMessage(event);
+                                }
+                            }}
                         />
                         </View>
                         {/* Correct/Incorrect Buttons */}
-                        <View style={styles.buttonsContainer}>
+                        {!autoCheck ? (
+                            <View style={styles.buttonsContainer}>
                             <TouchableOpacity onPress={handleUnknown} style={styles.incorrectButton}>
                                 <Icon name="close" size={30} color="#FFFFFF" />
                             </TouchableOpacity>
@@ -416,7 +441,14 @@ const WriteScreen = () => {
                                 <Icon name="check" size={30} color="#FFFFFF" />
                             </TouchableOpacity>
                         </View>
-
+                        ) : (
+                            <View style={styles.buttonsContainer}>
+                            {/* Dummy buttons to maintain layout */}
+                            <View style={styles.incorrectButtonPlaceholder} />
+                            <View style={styles.correctButtonPlaceholder} />
+                        </View>
+                        )}
+                        
                         {/* Bottom Section */}
                         <View style={styles.bottomSection}>
                             {/* Undo Button */}
