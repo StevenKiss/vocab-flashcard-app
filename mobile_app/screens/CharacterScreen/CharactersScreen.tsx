@@ -54,6 +54,7 @@ const CharactersScreen = () => {
     //console.log("Character selected:", character);
     //console.log("Generated HTML for WebView:", getHtmlContent(character.character));
     setSelectedCharacter(character);
+    console.log(character.pinyin)
     setModalVisible(true);
   };
 
@@ -85,15 +86,17 @@ const CharactersScreen = () => {
       <script>
         console.log("HanziWriter Scriptloaded");
         var writer = HanziWriter.create('character-target', '${character}', {
-          width: 300,
-          height: 300,
-          padding: 5,
-          strokeAnimationSpeed: 2,
-          radicalColor: '#168F16',
+          width: 150,
+          height: 150,
+          padding: 0,
+          strokeAnimationSpeed: 1,
+          radicalColor: '#6F4E7C',
           showOutline: true,
+          delayBetweenLoops: 3000,
+          delayBetweenStrokes: 300,
         });
 
-        writer.animateCharacter();
+        writer.loopCharacterAnimation();
         console.log("HanziWriter animation started");
       </script>
     </body>
@@ -160,7 +163,7 @@ const CharactersScreen = () => {
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
               {selectedCharacter?.pinyin && (
-                <Text style={styles.modalPingyin}>
+                <Text style={styles.modalPinyin}>
                   {selectedCharacter.pinyin}
                 </Text>
               )}
@@ -172,7 +175,7 @@ const CharactersScreen = () => {
                   domStorageEnabled={true}
                   allowFileAccess={true}
                   allowUniversalAccessFromFileURLs={true}
-                  style={{ width: 300, height: 300, backgroundColor: 'transparent' }}
+                  style={{ width: 150, height: 150, backgroundColor: 'transparent' }}
                   onLoad={() => console.log("WebView Loaded Successfully")}
                   onError={(e) => console.error("WebView Error:", e.nativeEvent)}
                 />
