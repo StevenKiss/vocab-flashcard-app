@@ -112,6 +112,14 @@ const styles = StyleSheet.create({
         color: '#6F4E7C',
         marginTop: 20,
     },
+    searchInput: {
+        height: 40,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 8,
+        margin: 10,
+        paddingHorizontal: 10,
+    },
 });
 
 export default styles;

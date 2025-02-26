@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Modal,
   StatusBar,
+  TextInput,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { collection, getDocs } from 'firebase/firestore';
@@ -18,8 +19,26 @@ const CharactersScreen = () => {
   const [sections, setSections] = useState([]);
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  
+  // Use to make the search query not care about tone marks
+  const removeAcccents = (str) =>
+    str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+  // Filter sections based on character or pinyin
+  const filteredSections = sections
+    .map(section => ({
+      ...section,
+      data: section.data.filter(item => {
+        const query = removeAcccents(searchQuery.toLowerCase());
+        const pinyin = item.pinyin ? removeAcccents(item.pinyin.toLowerCase()) : '';
+        return (
+          item.character.includes(searchQuery) || pinyin.includes(query)
+        );
+      }),
+    }))
+    .filter(section => section.data.length > 0);
+
   const fetchCharacters = async () => {
     try {
       const uid = auth.currentUser?.uid;
@@ -134,14 +153,20 @@ const CharactersScreen = () => {
           barStyle="dark-content" 
         />
         <Text style={styles.title}>Characters</Text>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search by character or pinyin"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
 
-        {sections.length === 0 ? (
+        {filteredSections.length === 0 ? (
           <Text style={styles.emptyMessage}>
             No characters available. Add a set to get started!
           </Text>
         ) : (
           <SectionGrid
-            sections={sections}
+            sections={filteredSections}
             itemDimension={60}
             spacing={10}
             renderItem={({ item }) => (
