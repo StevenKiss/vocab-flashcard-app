@@ -11,7 +11,7 @@ import {
 import { db, auth } from '../../firebase/firebaseConfig';
 import { doc, setDoc } from 'firebase/firestore';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, CommonActions } from '@react-navigation/native';
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import styles from './CreateSetScreen.styles';
@@ -88,7 +88,14 @@ const CreateSetScreen = () => {
                     { Character: '', Pinyin: '', Definition: '' },
                 ]);
 
-                navigation.navigate('Library', { screen: 'LibraryMain' });
+                // Reset the add stack back to its base
+                navigation.dispatch(
+                    CommonActions.reset({
+                      index: 0,
+                      routes: [{ name: 'Library', params: { screen: 'LibraryMain' } }],
+                    })
+                );
+
             } else {
                 throw new Error('Failed to extract characters');
             }
