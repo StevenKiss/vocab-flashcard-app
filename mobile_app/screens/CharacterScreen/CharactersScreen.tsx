@@ -6,6 +6,7 @@ import {
   Modal,
   StatusBar,
   TextInput,
+  ScrollView,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { collection, getDocs } from 'firebase/firestore';
@@ -96,7 +97,7 @@ const CharactersScreen = () => {
         }
         #character-target {
           width: 150px;
-          height: 150px;
+          height: 100px;
         }
       </style>
     </head>
@@ -111,7 +112,7 @@ const CharactersScreen = () => {
           strokeAnimationSpeed: 1,
           radicalColor: '#6F4E7C',
           showOutline: true,
-          delayBetweenLoops: 3000,
+          delayBetweenLoops: 2000,
           delayBetweenStrokes: 300,
         });
 
@@ -201,25 +202,40 @@ const CharactersScreen = () => {
                   allowFileAccess={true}
                   allowUniversalAccessFromFileURLs={true}
                   style={{ width: 150, height: 150, backgroundColor: 'transparent' }}
-                  onLoad={() => console.log("WebView Loaded Successfully")}
+                  scrollEnabled={false}
+                  onLoad={() => console.log("WescrollbView Loaded Successfully")}
                   onError={(e) => console.error("WebView Error:", e.nativeEvent)}
                 />
               )}
-              {selectedCharacter?.definition && (
-                <Text style={styles.modalDefinition}>
-                  Definition: {selectedCharacter.definition}
-                </Text>
-              )}
-              {selectedCharacter?.phrases?.length > 0 && (
-                <>
-                  <Text style={styles.modalPhraseHeader}>Phrases:</Text>
-                  {selectedCharacter.phrases.map((phrase, index) => (
-                    <Text key={index} style={styles.modalPhrase}>
-                      {phrase.phrase} ({phrase.phrase_pinyin}): {phrase.phrase_definition}
+              <ScrollView style={styles.modalScrollBox}>
+
+                {selectedCharacter?.definition && (
+                  <>
+                    <Text style={styles.modalSectionHeader}>
+                      Definition:
                     </Text>
-                  ))}
-                </>
-              )}
+                    <Text style={styles.modalText}>
+                      {selectedCharacter.definition}
+                    </Text>
+                  </>
+                )}
+                {selectedCharacter?.phrases?.length > 0 && (
+                  <>
+                    <Text style={styles.modalSectionHeader}>Phrases:</Text>
+                      {selectedCharacter.phrases.map((phrase, index) => (
+                        <Text key={index} style={styles.modalText}>
+                          <Text style={{ fontWeight: 'bold' }}>
+                            - {phrase.phrase} ({phrase.phrase_pinyin}) 
+                          </Text>
+                          <Text>
+                            : {phrase.phrase_definition}
+                          </Text>  
+                        </Text>
+                      ))}
+                  </>
+                )}
+              </ScrollView>
+
               <Text style={styles.modalSets}>
                 Sets: {selectedCharacter?.sets?.join(', ')}
               </Text>

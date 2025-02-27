@@ -44,7 +44,7 @@ def extract_individual_characters(vocab_list, set_name="NoSet"):
                     individual_characters[char] = {
                         "id": char_id,
                         "character": char,
-                        "pinyin": char_pinyin, #Leave empty for time being as it is complicated to implement
+                        "pinyin": char_pinyin,
                         "definition": "", #Leave empty for time being as it is complicated to implement
                         "phrases": [],
                         "sets": [set_name]

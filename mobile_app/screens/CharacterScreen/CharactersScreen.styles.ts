@@ -60,8 +60,9 @@ const styles = StyleSheet.create({
         padding: 20,
         borderRadius: 8,
         width: 300,
-        height: 400,
+        height: 450,
         alignItems: 'center',
+        flexDirection: 'column',
     },
     modalTitle: {
         fontSize: 24,
@@ -74,20 +75,15 @@ const styles = StyleSheet.create({
         color: "#333",
         marginBottom: 5,
     },
-    modalDefinition: {
+    modalText: {
         fontSize: 16,
         marginBottom: 10,
-        textAlign: 'center',
     },
-    modalPhrase: {
-        fontSize: 16,
-        marginBottom: 10,
-        textAlign: 'center',
-    },
-    modalPhraseHeader: {
+    modalSectionHeader: {
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 5,
+        textAlign: 'center',
         color: '#6f4E7C'
     },
     modalSets: {
@@ -119,6 +115,9 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         margin: 10,
         paddingHorizontal: 10,
+    },
+    modalScrollBox: {
+        height: 0,
     },
 });
 
