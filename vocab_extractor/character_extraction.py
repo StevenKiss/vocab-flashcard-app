@@ -1,4 +1,10 @@
 import uuid
+from pypinyin import pinyin, Style
+
+def get_pinyin(char):
+    # Returns pinyin with tone marks (e.g., "nǐ" for 你)
+    result = pinyin(char, style=Style.TONE)
+    return ''.join(item[0] for item in result)
 
 def extract_individual_characters(vocab_list, set_name="NoSet"):
     """
@@ -22,7 +28,7 @@ def extract_individual_characters(vocab_list, set_name="NoSet"):
             individual_characters[word] = {
                 "id": char_id,
                 "character": word,
-                "pinyin": pinyin,
+                "pinyin": pinyin or get_pinyin(word),
                 "definition": definition,
                 "phrases": [],
                 "sets": [set_name]
@@ -31,13 +37,14 @@ def extract_individual_characters(vocab_list, set_name="NoSet"):
             # Handle case  where it is a compound word
             for char in word:
                 char_id = str(uuid.uuid4())
+                char_pinyin = get_pinyin(char)
 
                 # Add or update the character's entry
                 if char not in individual_characters:
                     individual_characters[char] = {
                         "id": char_id,
                         "character": char,
-                        "pinyin": "", #Leave empty for time being as it is complicated to implement
+                        "pinyin": char_pinyin, #Leave empty for time being as it is complicated to implement
                         "definition": "", #Leave empty for time being as it is complicated to implement
                         "phrases": [],
                         "sets": [set_name]
