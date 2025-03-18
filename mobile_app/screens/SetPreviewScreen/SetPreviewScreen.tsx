@@ -204,7 +204,7 @@ const SetPreviewScreen = ({ navigation, route }) => {
                 >
                     <View style={styles.modalContainer}>
                         <View style={styles.modalContent}>
-                            <TouchableOpacity
+                            {/*<TouchableOpacity
                                 onPress={() => {
                                     setOptionsModalVisible(false);
                                     Alert.alert('Set Info', `Created: ${creationDate}\nTotal Cards: ${cards.length}`);
@@ -212,7 +212,7 @@ const SetPreviewScreen = ({ navigation, route }) => {
                                 style={styles.modalOption}
                             >
                                 <Text style={styles.modalOptionText}>Info</Text>
-                            </TouchableOpacity>
+                            </TouchableOpacity>*/}
                             <TouchableOpacity
                                 onPress={() => {
                                     setOptionsModalVisible(false);

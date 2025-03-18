@@ -120,6 +120,7 @@ const styles = StyleSheet.create({
     closeText: {
         color: '#FFF',
         fontSize: 14,
+        fontWeight: 'bold',
     },
     buttonText: {
         color: '#FFF',
