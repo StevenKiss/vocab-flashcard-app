@@ -216,7 +216,7 @@ const SetPreviewScreen = ({ navigation, route }) => {
                             <TouchableOpacity
                                 onPress={() => {
                                     setOptionsModalVisible(false);
-                                    alert('Edit Mode Coming Soon!');
+                                    navigation.navigate('EditScreen', {setId: setId});
                                 }}
                                 style={styles.modalOption}
                             >

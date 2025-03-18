@@ -22,6 +22,7 @@ import LoginScreen from './screens/LoginScreen/LoginScreen';
 import CreateSetScreen from './screens/CreateSetScreen/CreateSetScreen';
 import SetPreviewScreen from './screens/SetPreviewScreen/SetPreviewScreen';
 import WriteScreen from './screens/WriteScreen/WriteScreen';
+import EditScreen from './screens/EditScreen/EditScreen';
 
 // Navigators
 const Tab = createBottomTabNavigator();
@@ -46,6 +47,13 @@ function LibraryStackScreen() {
         name="SetPreviewScreen"
         component={SetPreviewScreen}
         options={({ route }) => ({ title: route.params?.title || 'Set Preview'})}
+      />
+
+      {/* EditScren for editing a set */ }
+      <LibraryStack.Screen
+        name="EditScreen"
+        component={EditScreen}
+        options={({ route }) => ({title: route.params?.title || 'Edit Screen'})}
       />
 
       {/* Flashcard screen */}

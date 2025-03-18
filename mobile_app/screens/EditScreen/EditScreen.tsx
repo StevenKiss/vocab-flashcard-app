@@ -1,0 +1,200 @@
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+  StatusBar,
+} from 'react-native';
+import { db, auth } from '../../firebase/firebaseConfig';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation, useRoute, CommonActions } from '@react-navigation/native';
+import axios from 'axios';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import styles from './EditScreen.styles';
+
+const EditScreen = () => {
+  const navigation = useNavigation();
+  const route = useRoute();
+  const { setId } = route.params; // passed from previous screen
+
+  const [title, setTitle] = useState('');
+  const [flashcards, setFlashcards] = useState([
+    { Character: '', Pinyin: '', Definition: '' },
+    { Character: '', Pinyin: '', Definition: '' },
+  ]);
+
+  useEffect(() => {
+    const fetchSetData = async () => {
+      try {
+        const uid = auth.currentUser?.uid;
+        if (!uid || !setId) return;
+
+        const docRef = doc(db, `users/${uid}/CharacterAndVocabData/${setId}`);
+        const snapshot = await getDoc(docRef);
+        if (snapshot.exists()) {
+          const data = snapshot.data();
+          setTitle(data.title || '');
+          setFlashcards(data.vocab || []);
+        }
+      } catch (error) {
+        console.error('Error fetching set data:', error);
+        Alert.alert('Error', 'Failed to load the set data.');
+      }
+    };
+    fetchSetData();
+  }, [setId]);
+
+  const addFlashcard = () => {
+    setFlashcards([...flashcards, { Character: '', Pinyin: '', Definition: '' }]);
+  };
+
+  const deleteFlashcard = (index: number) => {
+    Alert.alert('Confirm Delete', 'Are you sure you want to delete this flashcard?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => {
+          setFlashcards((prev) => prev.filter((_, i) => i !== index));
+        },
+      },
+    ]);
+  };
+
+  const handleUpdateSet = async () => {
+    if (!title.trim()) {
+      Alert.alert('Error', 'Please provide a title.');
+      return;
+    }
+    const uid = auth.currentUser?.uid;
+    if (!uid) {
+      Alert.alert('Error', 'User not authenticated.');
+      return;
+    }
+    try {
+      const updatedSet = {
+        title,
+        createdAt: new Date(),
+        vocab: flashcards,
+        characters: [],
+      };
+
+      // Process vocab for character extraction
+      const response = await axios.post("http://192.168.4.23:5000/process_vocab", updatedSet);
+      if (response.status === 200 && response.data.characters) {
+        updatedSet.characters = response.data.characters;
+        const docRef = doc(db, `users/${uid}/CharacterAndVocabData/${setId}`);
+        await setDoc(docRef, updatedSet);
+
+        Alert.alert('Success', 'Set updated successfully!');
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: 'Library', params: { screen: 'LibraryMain' } }],
+          })
+        );
+      } else {
+        throw new Error('Character extraction failed');
+      }
+    } catch (error) {
+      console.error('Error updating set:', error);
+      Alert.alert('Error', 'Failed to update the set. Please try again.');
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <SafeAreaView style={styles.safeArea}>
+        <StatusBar 
+          translucent 
+          backgroundColor="transparent" 
+          barStyle="dark-content"
+        />
+        <Text style={styles.header}>Edit Vocabulary Set</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Title"
+          value={title}
+          onChangeText={setTitle}
+        />
+        <ScrollView style={styles.scrollView}>
+          {flashcards.map((card, index) => (
+            <View key={index} style={styles.card}>
+              <View style={styles.cardInfoContainer}>
+                <Text style={styles.cardNumber}>{index + 1}</Text>
+                <TouchableOpacity style={styles.deleteButton} onPress={() => deleteFlashcard(index)}>
+                  <Icon name="remove" size={24} color="red" />
+                </TouchableOpacity>
+              </View>
+              <TextInput
+                style={styles.input}
+                placeholder="Character(s)"
+                value={card.Character}
+                onChangeText={(text) => {
+                  setFlashcards((prev) => {
+                    const updated = [...prev];
+                    updated[index].Character = text;
+                    return updated;
+                  });
+                }}
+                onEndEditing={() => {
+                  const chineseRegex = /^[\u4e00-\u9fa5]+$/;
+                  const currentCharacter = flashcards[index].Character;
+                  if (currentCharacter !== '' && !chineseRegex.test(currentCharacter)) {
+                    Alert.alert('Invalid Input', 'Please ensure only Chinese characters are entered.');
+                    setFlashcards((prev) => {
+                      const updated = [...prev];
+                      updated[index].Character = '';
+                      return updated;
+                    });
+                  }
+                }}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Pinyin"
+                value={card.Pinyin}
+                onChangeText={(text) => {
+                  setFlashcards((prev) => {
+                    const updated = [...prev];
+                    updated[index].Pinyin = text;
+                    return updated;
+                  });
+                }}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Definition"
+                value={card.Definition}
+                onChangeText={(text) => {
+                  setFlashcards((prev) => {
+                    const updated = [...prev];
+                    updated[index].Definition = text;
+                    return updated;
+                  });
+                }}
+              />
+            </View>
+          ))}
+          <TouchableOpacity style={styles.addButton} onPress={addFlashcard}>
+            <Text style={styles.addButtonText}>+ Add Flashcard</Text>
+          </TouchableOpacity>
+        </ScrollView>
+        <View style={styles.buttonRow}>
+          <TouchableOpacity style={styles.cancelButton} onPress={() => navigation.goBack()}>
+            <Text style={styles.cancelButtonText}>Cancel</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.saveButton} onPress={handleUpdateSet}>
+            <Text style={styles.saveButtonText}>Update</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    </View>
+  );
+};
+
+export default EditScreen;
