@@ -84,7 +84,7 @@ const EditScreen = () => {
       };
 
       // Process vocab for character extraction
-      const response = await axios.post("http://192.168.4.23:5000/process_vocab", updatedSet);
+      const response = await axios.post("http://10.186.182.141:5000/process_vocab", updatedSet);
       if (response.status === 200 && response.data.characters) {
         updatedSet.characters = response.data.characters;
         const docRef = doc(db, `users/${uid}/CharacterAndVocabData/${setId}`);

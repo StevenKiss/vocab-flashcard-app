@@ -66,7 +66,7 @@ const AddScreen = () => {
         console.log('FormData:', formData);
         try {
             // Sending the POST request to the Flask server
-            const response = await axios.post("http://10.186.186.26:5000/upload", formData, {
+            const response = await axios.post("http://10.186.182.141:5000/upload", formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
